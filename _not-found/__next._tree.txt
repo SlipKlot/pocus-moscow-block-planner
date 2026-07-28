@@ -1,2 +1,2 @@
-:HL["/pocus-moscow-block-planner/_next/static/chunks/0c58x1wbkk1_f.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"dsgd8IL31WuhfdZLZ89yE"}
+:HL["/pocus-moscow-block-planner/_next/static/chunks/0wudquf~c.u8w.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"6psBpXwjyi54_yDFrX7yY"}

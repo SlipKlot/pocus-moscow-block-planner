@@ -1,4 +1,4 @@
-:HL["/pocus-moscow-block-planner/_next/static/chunks/0c58x1wbkk1_f.css","style"]
+:HL["/pocus-moscow-block-planner/_next/static/chunks/0wudquf~c.u8w.css","style"]
 :HL["/pocus-moscow-block-planner/_next/static/media/797e433ab948586e-s.p.08e28id.o-okb.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/pocus-moscow-block-planner/_next/static/media/caa3a2e1cccd8315-s.p.09~u27dqhyhd6.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"dsgd8IL31WuhfdZLZ89yE"}
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}},"staleTime":300,"buildId":"6psBpXwjyi54_yDFrX7yY"}
