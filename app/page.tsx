@@ -16,6 +16,7 @@ type UpperOperationId =
   | "tendon";
 type DiaphragmRisk = "Высокий" | "Умеренный" | "Низкий" | "Минимальный";
 type AtlasZoneId = "upper" | "lower" | "myofascial" | "paravertebral" | "neuraxial";
+type AtlasVisual = "front" | "posterior" | "shoulder-fracture" | "hip-arthroplasty";
 
 const atlasZones: Array<{
   id: AtlasZoneId;
@@ -24,6 +25,8 @@ const atlasZones: Array<{
   title: string;
   focus: string;
   description: string;
+  visual: AtlasVisual;
+  visualLabel: string;
   status: "LIVE" | "NEXT";
   href?: string;
 }> = [
@@ -35,6 +38,8 @@ const atlasZones: Array<{
     focus: "BRACHIAL PLEXUS / UPPER LIMB",
     description:
       "Остеосинтез ключицы, плеча, предплечья и кисти. Сравнение стратегий с оценкой риска диафрагмальной дисфункции.",
+    visual: "shoulder-fracture",
+    visualLabel: "ПЕРЕЛОМ ХИРУРГИЧЕСКОЙ ШЕЙКИ ПЛЕЧА",
     status: "LIVE",
     href: "#upper-limb",
   },
@@ -46,6 +51,8 @@ const atlasZones: Array<{
     focus: "LUMBOSACRAL PLEXUS / LOWER LIMB",
     description:
       "Операция, хирургическая зона, нервные территории, мотор-сберегающие стратегии и ожидаемые слепые зоны.",
+    visual: "hip-arthroplasty",
+    visualLabel: "ТОТАЛЬНОЕ ЭНДОПРОТЕЗИРОВАНИЕ ТБС",
     status: "LIVE",
     href: "#planner",
   },
@@ -57,6 +64,8 @@ const atlasZones: Array<{
     focus: "FASCIAL PLANES / TRUNK",
     description:
       "Навигация по фасциальным пространствам, зоне хирургического доступа и ожидаемому распространению раствора.",
+    visual: "front",
+    visualLabel: "ПЕРЕДНЯЯ ПРОЕКЦИЯ / ФАСЦИАЛЬНЫЕ ПЛОСКОСТИ",
     status: "NEXT",
   },
   {
@@ -67,6 +76,8 @@ const atlasZones: Array<{
     focus: "PARAVERTEBRAL SPACE",
     description:
       "Уровень вмешательства, дерматомное покрытие, плевра, сосудистые структуры и контроль распространения.",
+    visual: "posterior",
+    visualLabel: "ЗАДНЯЯ ПРОЕКЦИЯ / ПАРАВЕРТЕБРАЛЬНАЯ ЗОНА",
     status: "NEXT",
   },
   {
@@ -77,6 +88,8 @@ const atlasZones: Array<{
     focus: "NEURAXIAL / SPINE",
     description:
       "Выбор уровня, предоперационная УЗ-разметка, срединный и парамедианный доступ, антитромботический контроль.",
+    visual: "posterior",
+    visualLabel: "ЗАДНЯЯ ПРОЕКЦИЯ / НЕЙРОАКСИАЛЬНАЯ ОСЬ",
     status: "NEXT",
   },
 ];
@@ -423,19 +436,33 @@ function BodyAtlasHero() {
       </header>
 
       <div className="atlas-stage">
-        <div className="atlas-media" data-zone={zone.id} aria-hidden="true">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={`${assetBasePath}/media/body-atlas/poster.webp`}
-          >
-            <source src={`${assetBasePath}/media/body-atlas/body-atlas-loop.mp4`} type="video/mp4" />
-          </video>
+        <div className="atlas-media" data-zone={zone.id} data-visual={zone.visual} aria-hidden="true">
+          <div className={`atlas-visual atlas-visual--front ${zone.visual === "front" ? "is-active" : ""}`}>
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={`${assetBasePath}/media/body-atlas/poster.webp`}
+            >
+              <source src={`${assetBasePath}/media/body-atlas/body-atlas-loop.mp4`} type="video/mp4" />
+            </video>
+            <div
+              className="atlas-poster"
+              style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/poster.webp")` }}
+            />
+          </div>
           <div
-            className="atlas-poster"
-            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/poster.webp")` }}
+            className={`atlas-visual atlas-visual--posterior ${zone.visual === "posterior" ? "is-active" : ""}`}
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/posterior-atlas.webp")` }}
+          />
+          <div
+            className={`atlas-visual atlas-visual--shoulder-fracture ${zone.visual === "shoulder-fracture" ? "is-active" : ""}`}
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/shoulder-fracture.webp")` }}
+          />
+          <div
+            className={`atlas-visual atlas-visual--hip-arthroplasty ${zone.visual === "hip-arthroplasty" ? "is-active" : ""}`}
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/hip-arthroplasty.webp")` }}
           />
         </div>
         <div className="atlas-vignette" />
@@ -464,6 +491,7 @@ function BodyAtlasHero() {
           </div>
           <h2>{zone.title}</h2>
           <p>{zone.description}</p>
+          <span className="atlas-visual-label">{zone.visualLabel}</span>
           {zone.href ? (
             <a href={zone.href}>Открыть раздел <span>↓</span></a>
           ) : (
@@ -493,6 +521,8 @@ function BodyAtlasHero() {
           <i />
           <span>CAMERA TARGET</span>
           <b>{zone.focus}</b>
+          <span>VIEW</span>
+          <b>{zone.visual === "posterior" ? "POSTERIOR" : "CLINICAL FOCUS"}</b>
         </div>
       </div>
     </section>
@@ -1202,7 +1232,7 @@ export default function Home() {
         <p>
           Демонстрационный прототип для обсуждения логики продукта. Не является клинической рекомендацией и требует экспертной валидации перед применением.
         </p>
-        <span>VERSION 0.3 / 2026</span>
+        <span>VERSION 0.4 / 2026</span>
       </footer>
     </main>
   );

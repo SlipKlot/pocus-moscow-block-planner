@@ -167,6 +167,7 @@ main::after {
 
 .atlas-stage,
 .atlas-media,
+.atlas-visual,
 .atlas-media video,
 .atlas-poster,
 .atlas-vignette,
@@ -187,14 +188,28 @@ main::after {
   background: #030708;
 }
 
-.atlas-media video,
-.atlas-poster {
-  object-fit: cover;
-  object-position: center;
+.atlas-visual {
+  opacity: 0;
+  overflow: hidden;
+  background-position: center;
+  background-size: cover;
+  filter: saturate(0.88) contrast(1.08);
+  transform: scale(1.04);
   transition:
+    opacity 760ms ease,
     transform 1350ms cubic-bezier(0.2, 0.8, 0.2, 1),
     filter 900ms ease;
-  will-change: transform;
+  will-change: opacity, transform;
+}
+
+.atlas-visual.is-active {
+  opacity: 1;
+}
+
+.atlas-visual video,
+.atlas-visual .atlas-poster {
+  object-fit: cover;
+  object-position: center;
 }
 
 .atlas-media video {
@@ -207,34 +222,29 @@ main::after {
   background-size: cover;
 }
 
-.atlas-media[data-zone="upper"] video,
-.atlas-media[data-zone="upper"] .atlas-poster {
-  transform: translate(0, 20vh) scale(2.05);
-  transform-origin: 52% 27%;
+.atlas-media[data-zone="upper"] .atlas-visual--shoulder-fracture {
+  transform: translate(4vw, 1vh) scale(1.12);
+  transform-origin: 57% 45%;
 }
 
-.atlas-media[data-zone="lower"] video,
-.atlas-media[data-zone="lower"] .atlas-poster {
-  transform: translate(0, -23vh) scale(1.75);
-  transform-origin: 52% 74%;
+.atlas-media[data-zone="lower"] .atlas-visual--hip-arthroplasty {
+  transform: translate(4vw, 1vh) scale(1.13);
+  transform-origin: 57% 53%;
 }
 
-.atlas-media[data-zone="myofascial"] video,
-.atlas-media[data-zone="myofascial"] .atlas-poster {
+.atlas-media[data-zone="myofascial"] .atlas-visual--front {
   transform: translate(0, 6vh) scale(2.05);
   transform-origin: 50% 43%;
 }
 
-.atlas-media[data-zone="paravertebral"] video,
-.atlas-media[data-zone="paravertebral"] .atlas-poster {
-  transform: translate(-3vw, 7vh) scale(2.2);
-  transform-origin: 52% 40%;
+.atlas-media[data-zone="paravertebral"] .atlas-visual--posterior {
+  transform: translate(-1vw, 9vh) scale(1.88);
+  transform-origin: 51% 36%;
 }
 
-.atlas-media[data-zone="neuraxial"] video,
-.atlas-media[data-zone="neuraxial"] .atlas-poster {
-  transform: translate(-2vw, 2vh) scale(2.55);
-  transform-origin: 52% 48%;
+.atlas-media[data-zone="neuraxial"] .atlas-visual--posterior {
+  transform: translate(-1vw, -2vh) scale(2.2);
+  transform-origin: 51% 52%;
 }
 
 .atlas-vignette {
@@ -354,6 +364,15 @@ main::after {
   color: #8ea2a4;
   font-size: 12px;
   line-height: 1.6;
+}
+
+.atlas-visual-label {
+  display: block;
+  margin-top: 15px;
+  color: var(--cyan-soft);
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
 }
 
 .atlas-zone-card > a {
@@ -504,11 +523,11 @@ main::after {
   white-space: nowrap;
 }
 
-.atlas-target--upper { top: 31%; left: 53%; }
-.atlas-target--lower { top: 61%; left: 53%; }
+.atlas-target--upper { top: 45%; left: 58%; }
+.atlas-target--lower { top: 53%; left: 61%; }
 .atlas-target--myofascial { top: 44%; left: 49%; }
-.atlas-target--paravertebral { top: 42%; left: 52%; }
-.atlas-target--neuraxial { top: 50%; left: 52%; }
+.atlas-target--paravertebral { top: 40%; left: 51%; }
+.atlas-target--neuraxial { top: 52%; left: 51%; }
 
 .atlas-data {
   position: absolute;
@@ -2465,35 +2484,30 @@ footer > span {
     display: none;
   }
 
-  .atlas-target--upper { top: 38%; left: 57%; }
-  .atlas-target--lower { top: 55%; left: 57%; }
+  .atlas-target--upper { top: 42%; left: 58%; }
+  .atlas-target--lower { top: 49%; left: 58%; }
   .atlas-target--myofascial { top: 45%; left: 51%; }
   .atlas-target--paravertebral { top: 44%; left: 55%; }
   .atlas-target--neuraxial { top: 49%; left: 55%; }
 
-  .atlas-media[data-zone="upper"] video,
-  .atlas-media[data-zone="upper"] .atlas-poster {
-    transform: translate(0, 14vh) scale(1.65);
+  .atlas-media[data-zone="upper"] .atlas-visual--shoulder-fracture {
+    transform: translate(11vw, -2vh) scale(1.52);
   }
 
-  .atlas-media[data-zone="lower"] video,
-  .atlas-media[data-zone="lower"] .atlas-poster {
-    transform: translate(0, -16vh) scale(1.5);
+  .atlas-media[data-zone="lower"] .atlas-visual--hip-arthroplasty {
+    transform: translate(8vw, -2vh) scale(1.44);
   }
 
-  .atlas-media[data-zone="myofascial"] video,
-  .atlas-media[data-zone="myofascial"] .atlas-poster {
+  .atlas-media[data-zone="myofascial"] .atlas-visual--front {
     transform: translate(0, 5vh) scale(1.65);
   }
 
-  .atlas-media[data-zone="paravertebral"] video,
-  .atlas-media[data-zone="paravertebral"] .atlas-poster {
-    transform: translate(-3vw, 7vh) scale(1.75);
+  .atlas-media[data-zone="paravertebral"] .atlas-visual--posterior {
+    transform: translate(3vw, 6vh) scale(1.72);
   }
 
-  .atlas-media[data-zone="neuraxial"] video,
-  .atlas-media[data-zone="neuraxial"] .atlas-poster {
-    transform: translate(-2vw, 2vh) scale(1.9);
+  .atlas-media[data-zone="neuraxial"] .atlas-visual--posterior {
+    transform: translate(3vw, 0) scale(1.92);
   }
 
   .cinematic {

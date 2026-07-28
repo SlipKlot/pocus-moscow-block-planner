@@ -66,6 +66,19 @@ proportions, suit, equipment and laboratory environment. End pose and lighting
 should match the opening frame.
 ```
 
-The interactive camera move is implemented in the browser. Selecting a clinical
-direction smoothly changes the video scale and transform origin so the same
-Higgsfield model remains consistent across all five anatomical routes.
+## Digital Human Atlas — clinical focus set
+
+Version 0.4 adds three generated navigation frames:
+
+- posterior atlas for paravertebral and neuraxial routes
+  (`8de7c83a-1374-4bfa-98f7-d06c44492afa`);
+- proximal humerus surgical-neck fracture
+  (`66be74aa-58c0-4c9c-b8e9-9b5160ceab7c`);
+- total hip arthroplasty
+  (`ae400f34-ed67-489f-b94c-2d4370af35b5`).
+
+All three were generated from the original Digital Human Atlas reference to
+preserve the graphite/cyan/amber visual language. The browser cross-fades the
+matching scene and applies a zone-specific camera transform. Paravertebral and
+neuraxial routes share the posterior model but use different thoracic and
+lumbar camera targets.
