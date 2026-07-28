@@ -191,8 +191,10 @@ main::after {
 }
 
 .cinematic-poster {
-  background:
-    #05090b url("/media/knee-scroll/poster.webp") center / cover no-repeat;
+  background-color: #05090b;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   opacity: 0.74;
   filter: saturate(0.92) contrast(1.08);
   transition: opacity 700ms ease;

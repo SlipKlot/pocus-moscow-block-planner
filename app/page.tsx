@@ -45,6 +45,7 @@ const chapters = [
 ];
 
 const chapterStops = [0, 0.15, 0.32, 0.5, 0.68, 0.82];
+const assetBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const strategies = {
   balanced: {
@@ -118,7 +119,7 @@ function CinematicScroll({
     const displayFrameCount = window.innerWidth < 760 ? 36 : sourceFrameCount;
     const frames = Array.from({ length: displayFrameCount }, (_, index) => {
       const mapped = Math.round((index * (sourceFrameCount - 1)) / (displayFrameCount - 1)) + 1;
-      return `/media/knee-scroll/frames/frame-${String(mapped).padStart(3, "0")}.webp`;
+      return `${assetBasePath}/media/knee-scroll/frames/frame-${String(mapped).padStart(3, "0")}.webp`;
     });
     const images = frames.map(() => new Image());
     imagesRef.current = images;
@@ -211,7 +212,11 @@ function CinematicScroll({
         </header>
 
         <div className="cinematic-media" data-ready={canvasReady}>
-          <div className="cinematic-poster" aria-hidden="true" />
+          <div
+            className="cinematic-poster"
+            style={{ backgroundImage: `url("${assetBasePath}/media/knee-scroll/poster.webp")` }}
+            aria-hidden="true"
+          />
           <canvas ref={canvasRef} className="cinematic-canvas" aria-hidden="true" />
           <div className="cinematic-vignette" />
           <div className="cinematic-grid" />
