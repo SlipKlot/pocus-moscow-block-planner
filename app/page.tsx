@@ -5,28 +5,46 @@ import { useEffect, useMemo, useRef, useState } from "react";
 type StoryStep = 0 | 1 | 2 | 3;
 type Strategy = "balanced" | "motor" | "extended";
 
-const story = [
+const chapters = [
   {
-    eyebrow: "01 / ОПЕРАЦИЯ",
-    title: "Определяем хирургическую зону",
-    text: "Тотальное эндопротезирование коленного сустава: передняя капсула, медиальный доступ и задняя капсула формируют разные источники боли.",
+    eyebrow: "00 / ЗАПРОС",
+    title: "Назовите операцию.",
+    text: "Система разложит хирургическое вмешательство на зоны боли, нервные территории и возможные стратегии регионарной анестезии.",
+    layer: "OPERATION INPUT",
+  },
+  {
+    eyebrow: "01 / ХИРУРГИЧЕСКАЯ ЗОНА",
+    title: "Что будет источником боли?",
+    text: "TKA затрагивает переднюю и заднюю капсулу, медиальный доступ и ткани операционного поля. Название операции — только начало навигации.",
+    layer: "SURGICAL FIELD",
   },
   {
     eyebrow: "02 / ИННЕРВАЦИЯ",
-    title: "Раскладываем боль по нервным территориям",
-    text: "Передняя и медиальная зоны связаны с ветвями бедренного нерва. Задняя капсула требует отдельного внимания к терминальным суставным ветвям.",
+    title: "Кто проводит болевой сигнал?",
+    text: "Передняя и медиальная территории связаны с ветвями бедренного нерва. Задняя капсула требует отдельного анализа суставных ветвей.",
+    layer: "NEURAL MAP",
   },
   {
     eyebrow: "03 / ПОКРЫТИЕ",
-    title: "Находим слепые зоны",
-    text: "Adductor Canal Block хорошо закрывает медиальную сенсорную территорию, но не должен автоматически считаться полным покрытием задней капсулы.",
+    title: "Что закрывает базовая стратегия?",
+    text: "ACB и периартикулярная LIA формируют мотор-сберегающую основу, но покрытие нужно оценивать по территориям, а не по названию блока.",
+    layer: "COVERAGE FIELD",
   },
   {
-    eyebrow: "04 / СТРАТЕГИЯ",
-    title: "Собираем мультимодальный план",
-    text: "Предварительная стратегия: ACB + хирургическая LIA. iPACK рассматривается как дополнение, когда важно усилить покрытие задней капсулы.",
+    eyebrow: "04 / СЛЕПАЯ ЗОНА",
+    title: "Что может остаться без покрытия?",
+    text: "Задняя капсула остаётся контрольной зоной. Она должна быть показана рядом с преимуществами стратегии, а не спрятана в примечаниях.",
+    layer: "POSTERIOR GAP",
+  },
+  {
+    eyebrow: "05 / РЕШЕНИЕ",
+    title: "Собираем стратегию.",
+    text: "Предварительная конфигурация: ACB + LIA. iPACK рассматривается как опциональное дополнение, если требуется усилить заднее покрытие.",
+    layer: "BLOCK STRATEGY",
   },
 ];
+
+const chapterStops = [0, 0.15, 0.32, 0.5, 0.68, 0.82];
 
 const strategies = {
   balanced: {
@@ -69,6 +87,199 @@ const strategies = {
       "Добавляет мотор-сберегающую работу с задней капсулой при наличии соответствующих показаний.",
   },
 };
+
+function CinematicScroll({
+  query,
+  onQueryChange,
+}: {
+  query: string;
+  onQueryChange: (value: string) => void;
+}) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imagesRef = useRef<HTMLImageElement[]>([]);
+  const desiredFrameRef = useRef(0);
+  const drawnFrameRef = useRef(-1);
+  const animationRef = useRef<number | null>(null);
+  const [activeChapter, setActiveChapter] = useState(0);
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [canvasReady, setCanvasReady] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const canvas = canvasRef.current;
+    if (!section || !canvas) return;
+
+    const context = canvas.getContext("2d", { alpha: false });
+    if (!context) return;
+
+    const sourceFrameCount = 72;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const displayFrameCount = window.innerWidth < 760 ? 36 : sourceFrameCount;
+    const frames = Array.from({ length: displayFrameCount }, (_, index) => {
+      const mapped = Math.round((index * (sourceFrameCount - 1)) / (displayFrameCount - 1)) + 1;
+      return `/media/knee-scroll/frames/frame-${String(mapped).padStart(3, "0")}.webp`;
+    });
+    const images = frames.map(() => new Image());
+    imagesRef.current = images;
+    let loaded = 0;
+    let stopped = false;
+
+    const resizeCanvas = () => {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.max(1, Math.round(rect.width * ratio));
+      canvas.height = Math.max(1, Math.round(rect.height * ratio));
+      drawnFrameRef.current = -1;
+    };
+
+    const drawFrame = (index: number) => {
+      const image = images[index];
+      if (!image?.complete || image.naturalWidth === 0) return false;
+      const scale = Math.max(canvas.width / image.naturalWidth, canvas.height / image.naturalHeight);
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      context.drawImage(image, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+      drawnFrameRef.current = index;
+      setCanvasReady(true);
+      return true;
+    };
+
+    const render = () => {
+      if (stopped) return;
+      const target = desiredFrameRef.current;
+      if (target !== drawnFrameRef.current) {
+        if (!drawFrame(target)) {
+          for (let distance = 1; distance < images.length; distance += 1) {
+            const previous = target - distance;
+            const next = target + distance;
+            if (previous >= 0 && drawFrame(previous)) break;
+            if (next < images.length && drawFrame(next)) break;
+          }
+        }
+      }
+      animationRef.current = window.requestAnimationFrame(render);
+    };
+
+    const updateFromScroll = () => {
+      const rect = section.getBoundingClientRect();
+      const scrollable = Math.max(1, rect.height - window.innerHeight);
+      const progress = Math.min(1, Math.max(0, -rect.top / scrollable));
+      desiredFrameRef.current = reducedMotion ? 0 : Math.round(progress * (images.length - 1));
+      let nextChapter = 0;
+      chapterStops.forEach((stop, index) => {
+        if (progress >= stop) nextChapter = index;
+      });
+      setActiveChapter(nextChapter);
+    };
+
+    images.forEach((image, index) => {
+      image.onload = () => {
+        loaded += 1;
+        setLoadProgress(Math.round((loaded / images.length) * 100));
+        if (index === 0) drawFrame(0);
+      };
+      image.src = frames[index];
+    });
+
+    resizeCanvas();
+    updateFromScroll();
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("scroll", updateFromScroll, { passive: true });
+    animationRef.current = window.requestAnimationFrame(render);
+
+    return () => {
+      stopped = true;
+      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("scroll", updateFromScroll);
+      if (animationRef.current) window.cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
+
+  return (
+    <section className="cinematic" id="top" ref={sectionRef}>
+      <div className="cinematic-sticky">
+        <header className="site-header">
+          <a className="brand" href="#top" aria-label="POCUS MOSCOW — в начало">
+            <span className="brand-mark">P</span>
+            <span>POCUS MOSCOW<small>BLOCK PLANNER</small></span>
+          </a>
+          <div className="header-meta">
+            <span className="live-chip"><i /> ONE-SHOT / TKA</span>
+            <a href="#planner">Открыть результат <span>↘</span></a>
+          </div>
+        </header>
+
+        <div className="cinematic-media" data-ready={canvasReady}>
+          <div className="cinematic-poster" aria-hidden="true" />
+          <canvas ref={canvasRef} className="cinematic-canvas" aria-hidden="true" />
+          <div className="cinematic-vignette" />
+          <div className="cinematic-grid" />
+        </div>
+
+        <div className="cinematic-ui">
+          <div className="chapter-stack">
+            {chapters.map((chapter, index) => (
+              <article
+                className={`cinematic-chapter ${activeChapter === index ? "is-active" : ""}`}
+                aria-hidden={activeChapter !== index}
+                key={chapter.eyebrow}
+              >
+                <p>{chapter.eyebrow}</p>
+                <h1>{chapter.title}</h1>
+                <span>{chapter.text}</span>
+                {index === 0 && (
+                  <>
+                    <label className="operation-search cinematic-search">
+                      <span>Операция</span>
+                      <input
+                        value={query}
+                        onChange={(event) => onQueryChange(event.target.value)}
+                        aria-label="Введите название операции"
+                      />
+                    </label>
+                    <div className="query-hints">
+                      <span>Распознаёт:</span>
+                      <button type="button" onClick={() => onQueryChange("ТЭКС")}>ТЭКС</button>
+                      <button type="button" onClick={() => onQueryChange("TKA")}>TKA</button>
+                      <button type="button" onClick={() => onQueryChange("Замена коленного сустава")}>замена колена</button>
+                    </div>
+                  </>
+                )}
+                {index === chapters.length - 1 && (
+                  <a className="cinematic-cta" href="#planner">
+                    Перейти к планировщику <span>↓</span>
+                  </a>
+                )}
+              </article>
+            ))}
+          </div>
+
+          <div className="cinematic-data" aria-hidden="true">
+            <span>CASE / 001</span>
+            <b>TKA · LOWER LIMB</b>
+            <i />
+            <span>ACTIVE LAYER</span>
+            <b>{chapters[activeChapter].layer}</b>
+          </div>
+
+          <div className="cinematic-progress" aria-hidden="true">
+            <span className="progress-number">0{activeChapter}</span>
+            <div className="progress-track">
+              <i style={{ height: `${Math.max(3, (activeChapter / (chapters.length - 1)) * 100)}%` }} />
+            </div>
+            <span>0{chapters.length - 1}</span>
+          </div>
+
+          <div className="frame-loader" aria-live="polite">
+            <i style={{ width: `${loadProgress}%` }} />
+            <span>{loadProgress < 100 ? `ATLAS LOADING ${loadProgress}%` : "ATLAS READY"}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 function KneeMap({ step, compact = false }: { step: StoryStep; compact?: boolean }) {
   return (
@@ -177,124 +388,13 @@ function KneeMap({ step, compact = false }: { step: StoryStep; compact?: boolean
 }
 
 export default function Home() {
-  const [activeStep, setActiveStep] = useState<StoryStep>(0);
   const [strategy, setStrategy] = useState<Strategy>("balanced");
   const [query, setQuery] = useState("Тотальное эндопротезирование коленного сустава");
-  const panelsRef = useRef<Array<HTMLDivElement | null>>([]);
   const selected = useMemo(() => strategies[strategy], [strategy]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActiveStep(Number(visible.target.getAttribute("data-index")) as StoryStep);
-      },
-      { rootMargin: "-30% 0px -48% 0px", threshold: [0.15, 0.45, 0.75] },
-    );
-    panelsRef.current.forEach((panel) => panel && observer.observe(panel));
-    return () => observer.disconnect();
-  }, []);
-
-  const scrollToStory = () => document.getElementById("story")?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <main>
-      <header className="site-header">
-        <a className="brand" href="#top" aria-label="POCUS MOSCOW — в начало">
-          <span className="brand-mark">P</span>
-          <span>POCUS MOSCOW<small>BLOCK PLANNER</small></span>
-        </a>
-        <div className="header-meta">
-          <span className="live-chip"><i /> PROTOTYPE 01</span>
-          <a href="#planner">Открыть планировщик <span>↘</span></a>
-        </div>
-      </header>
-
-      <section className="hero" id="top">
-        <div className="hero-grid" aria-hidden="true" />
-        <div className="orb orb--one" />
-        <div className="hero-copy">
-          <p className="section-kicker"><span>01</span> КЛИНИЧЕСКАЯ НАВИГАЦИЯ</p>
-          <h1>Назовите<br />операцию.</h1>
-          <p className="hero-lead">
-            Система сопоставит хирургическую зону, иннервацию и варианты регионарной анестезии.
-          </p>
-          <label className="operation-search">
-            <span>Операция</span>
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              aria-label="Введите название операции"
-            />
-            <button type="button" onClick={scrollToStory} aria-label="Показать стратегию">→</button>
-          </label>
-          <div className="query-hints">
-            <span>Также распознаёт:</span>
-            <button type="button" onClick={() => setQuery("ТЭКС")}>ТЭКС</button>
-            <button type="button" onClick={() => setQuery("TKA")}>TKA</button>
-            <button type="button" onClick={() => setQuery("Замена коленного сустава")}>замена колена</button>
-          </div>
-        </div>
-        <div className="hero-visual">
-          <KneeMap step={3} />
-          <div className="hero-data hero-data--top"><span>CASE</span><b>TKA / 001</b></div>
-          <div className="hero-data hero-data--bottom"><span>REGION</span><b>LOWER LIMB</b></div>
-        </div>
-        <button className="scroll-cue" type="button" onClick={scrollToStory}>
-          <span>Смотреть разбор</span><i />
-        </button>
-      </section>
-
-      <section className="story" id="story">
-        <div className="story-visual">
-          <div className="story-index">
-            {story.map((item, index) => (
-              <button
-                type="button"
-                key={item.eyebrow}
-                className={activeStep === index ? "is-active" : ""}
-                onClick={() => panelsRef.current[index]?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                aria-label={`Перейти к шагу ${index + 1}`}
-              >
-                0{index + 1}
-              </button>
-            ))}
-          </div>
-          <KneeMap step={activeStep} />
-          <div className="active-caption">
-            <span>ACTIVE LAYER</span>
-            <b>{["SURGICAL FIELD", "NEURAL MAP", "COVERAGE GAP", "BLOCK STRATEGY"][activeStep]}</b>
-          </div>
-        </div>
-        <div className="story-copy">
-          {story.map((item, index) => (
-            <div
-              className={`story-panel ${activeStep === index ? "is-active" : ""}`}
-              key={item.eyebrow}
-              data-index={index}
-              ref={(node) => { panelsRef.current[index] = node; }}
-            >
-              <p>{item.eyebrow}</p>
-              <h2>{item.title}</h2>
-              <span>{item.text}</span>
-              <div className="story-fact">
-                <i />
-                <div>
-                  <small>{["Хирургическая цель", "Ключевая логика", "Контрольный вопрос", "Результат"][index]}</small>
-                  <b>{[
-                    "Передняя + задняя капсула",
-                    "Покрыть источник, а не название операции",
-                    "Какая территория останется без покрытия?",
-                    "План, который можно обсудить с командой",
-                  ][index]}</b>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <CinematicScroll query={query} onQueryChange={setQuery} />
 
       <section className="planner" id="planner">
         <div className="planner-heading">
