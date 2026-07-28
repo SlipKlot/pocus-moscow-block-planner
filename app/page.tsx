@@ -15,6 +15,71 @@ type UpperOperationId =
   | "finger"
   | "tendon";
 type DiaphragmRisk = "Высокий" | "Умеренный" | "Низкий" | "Минимальный";
+type AtlasZoneId = "upper" | "lower" | "myofascial" | "paravertebral" | "neuraxial";
+
+const atlasZones: Array<{
+  id: AtlasZoneId;
+  index: string;
+  label: string;
+  title: string;
+  focus: string;
+  description: string;
+  status: "LIVE" | "NEXT";
+  href?: string;
+}> = [
+  {
+    id: "upper",
+    index: "01",
+    label: "Верхняя конечность",
+    title: "Плечевой пояс → кисть",
+    focus: "BRACHIAL PLEXUS / UPPER LIMB",
+    description:
+      "Остеосинтез ключицы, плеча, предплечья и кисти. Сравнение стратегий с оценкой риска диафрагмальной дисфункции.",
+    status: "LIVE",
+    href: "#upper-limb",
+  },
+  {
+    id: "lower",
+    index: "02",
+    label: "Нижняя конечность",
+    title: "Таз → стопа",
+    focus: "LUMBOSACRAL PLEXUS / LOWER LIMB",
+    description:
+      "Операция, хирургическая зона, нервные территории, мотор-сберегающие стратегии и ожидаемые слепые зоны.",
+    status: "LIVE",
+    href: "#planner",
+  },
+  {
+    id: "myofascial",
+    index: "03",
+    label: "Миофасциальные блокады",
+    title: "Грудная и брюшная стенка",
+    focus: "FASCIAL PLANES / TRUNK",
+    description:
+      "Навигация по фасциальным пространствам, зоне хирургического доступа и ожидаемому распространению раствора.",
+    status: "NEXT",
+  },
+  {
+    id: "paravertebral",
+    index: "04",
+    label: "Паравертебральные блокады",
+    title: "Паравертебральная зона",
+    focus: "PARAVERTEBRAL SPACE",
+    description:
+      "Уровень вмешательства, дерматомное покрытие, плевра, сосудистые структуры и контроль распространения.",
+    status: "NEXT",
+  },
+  {
+    id: "neuraxial",
+    index: "05",
+    label: "Нейроаксиальная навигация",
+    title: "Позвоночник и нейроаксиальная ось",
+    focus: "NEURAXIAL / SPINE",
+    description:
+      "Выбор уровня, предоперационная УЗ-разметка, срединный и парамедианный доступ, антитромботический контроль.",
+    status: "NEXT",
+  },
+];
 
 const chapters = [
   {
@@ -340,6 +405,100 @@ const anesthetics = [
   { id: "lidocaine", label: "Лидокаин", concentration: 1 },
 ];
 
+function BodyAtlasHero() {
+  const [zoneId, setZoneId] = useState<AtlasZoneId>("upper");
+  const zone = atlasZones.find((item) => item.id === zoneId) ?? atlasZones[0];
+
+  return (
+    <section className="atlas-hero" id="top">
+      <header className="site-header atlas-header">
+        <a className="brand" href="#top" aria-label="POCUS MOSCOW — в начало">
+          <span className="brand-mark">P</span>
+          <span>POCUS MOSCOW<small>BLOCK PLANNER</small></span>
+        </a>
+        <div className="header-meta">
+          <span className="live-chip"><i /> HUMAN ATLAS / HIGGSFIELD</span>
+          <a href="#upper-limb">Открыть планировщик <span>↘</span></a>
+        </div>
+      </header>
+
+      <div className="atlas-stage">
+        <div className="atlas-media" data-zone={zone.id} aria-hidden="true">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={`${assetBasePath}/media/body-atlas/poster.webp`}
+          >
+            <source src={`${assetBasePath}/media/body-atlas/body-atlas-loop.mp4`} type="video/mp4" />
+          </video>
+          <div
+            className="atlas-poster"
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/poster.webp")` }}
+          />
+        </div>
+        <div className="atlas-vignette" />
+        <div className="atlas-grid" />
+        <div className="atlas-scan" />
+        <div className={`atlas-target atlas-target--${zone.id}`}>
+          <i />
+          <span>{zone.focus}</span>
+        </div>
+      </div>
+
+      <div className="atlas-interface">
+        <div className="atlas-copy">
+          <p>00 / ANATOMICAL NAVIGATION</p>
+          <h1>Выберите<br />операцию.</h1>
+          <span>
+            Камера сфокусируется на нужной анатомической зоне, а планировщик
+            покажет возможные стратегии и обязательные точки контроля.
+          </span>
+        </div>
+
+        <div className="atlas-zone-card" aria-live="polite">
+          <div>
+            <span>ACTIVE REGION / {zone.index}</span>
+            <i className={zone.status === "LIVE" ? "is-live" : ""}>{zone.status}</i>
+          </div>
+          <h2>{zone.title}</h2>
+          <p>{zone.description}</p>
+          {zone.href ? (
+            <a href={zone.href}>Открыть раздел <span>↓</span></a>
+          ) : (
+            <span className="atlas-next">Следующий модуль базы знаний</span>
+          )}
+        </div>
+
+        <nav className="atlas-nav" aria-label="Выбор анатомического направления">
+          {atlasZones.map((item) => (
+            <button
+              type="button"
+              key={item.id}
+              className={zone.id === item.id ? "is-active" : ""}
+              onClick={() => setZoneId(item.id)}
+              aria-pressed={zone.id === item.id}
+            >
+              <i>{item.index}</i>
+              <span>{item.label}</span>
+              <b>{item.status}</b>
+            </button>
+          ))}
+        </nav>
+
+        <div className="atlas-data" aria-hidden="true">
+          <span>MODEL / HF-001</span>
+          <b>DIGITAL HUMAN · ADULT 18+</b>
+          <i />
+          <span>CAMERA TARGET</span>
+          <b>{zone.focus}</b>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function CinematicScroll({
   query,
   onQueryChange,
@@ -449,7 +608,7 @@ function CinematicScroll({
   }, []);
 
   return (
-    <section className="cinematic" id="top" ref={sectionRef}>
+    <section className="cinematic" id="knee-story" ref={sectionRef}>
       <div className="cinematic-sticky">
         <header className="site-header">
           <a className="brand" href="#top" aria-label="POCUS MOSCOW — в начало">
@@ -939,6 +1098,7 @@ export default function Home() {
 
   return (
     <main>
+      <BodyAtlasHero />
       <CinematicScroll query={query} onQueryChange={setQuery} />
 
       <section className="planner" id="planner">
@@ -1042,7 +1202,7 @@ export default function Home() {
         <p>
           Демонстрационный прототип для обсуждения логики продукта. Не является клинической рекомендацией и требует экспертной валидации перед применением.
         </p>
-        <span>VERSION 0.2 / 2026</span>
+        <span>VERSION 0.3 / 2026</span>
       </footer>
     </main>
   );

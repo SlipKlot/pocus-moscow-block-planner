@@ -152,6 +152,372 @@ main::after {
   animation: pulse 2s ease-in-out infinite;
 }
 
+.atlas-hero {
+  position: relative;
+  height: 100svh;
+  min-height: 760px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #030708;
+}
+
+.atlas-header {
+  position: absolute;
+}
+
+.atlas-stage,
+.atlas-media,
+.atlas-media video,
+.atlas-poster,
+.atlas-vignette,
+.atlas-grid,
+.atlas-scan {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.atlas-stage {
+  z-index: -1;
+  overflow: hidden;
+}
+
+.atlas-media {
+  background: #030708;
+}
+
+.atlas-media video,
+.atlas-poster {
+  object-fit: cover;
+  object-position: center;
+  transition:
+    transform 1350ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 900ms ease;
+  will-change: transform;
+}
+
+.atlas-media video {
+  z-index: 1;
+}
+
+.atlas-poster {
+  z-index: 0;
+  background-position: center;
+  background-size: cover;
+}
+
+.atlas-media[data-zone="upper"] video,
+.atlas-media[data-zone="upper"] .atlas-poster {
+  transform: translate(0, 20vh) scale(2.05);
+  transform-origin: 52% 27%;
+}
+
+.atlas-media[data-zone="lower"] video,
+.atlas-media[data-zone="lower"] .atlas-poster {
+  transform: translate(0, -23vh) scale(1.75);
+  transform-origin: 52% 74%;
+}
+
+.atlas-media[data-zone="myofascial"] video,
+.atlas-media[data-zone="myofascial"] .atlas-poster {
+  transform: translate(0, 6vh) scale(2.05);
+  transform-origin: 50% 43%;
+}
+
+.atlas-media[data-zone="paravertebral"] video,
+.atlas-media[data-zone="paravertebral"] .atlas-poster {
+  transform: translate(-3vw, 7vh) scale(2.2);
+  transform-origin: 52% 40%;
+}
+
+.atlas-media[data-zone="neuraxial"] video,
+.atlas-media[data-zone="neuraxial"] .atlas-poster {
+  transform: translate(-2vw, 2vh) scale(2.55);
+  transform-origin: 52% 48%;
+}
+
+.atlas-vignette {
+  z-index: 3;
+  background:
+    linear-gradient(90deg, rgba(2, 6, 8, 0.96), rgba(2, 6, 8, 0.56) 30%, transparent 52%, rgba(2, 6, 8, 0.52) 78%, rgba(2, 6, 8, 0.92)),
+    linear-gradient(180deg, rgba(2, 6, 8, 0.78), transparent 18%, transparent 70%, rgba(2, 6, 8, 0.92)),
+    radial-gradient(circle at 50% 42%, transparent 0, transparent 19%, rgba(1, 5, 7, 0.16) 52%, rgba(1, 5, 7, 0.72) 100%);
+}
+
+.atlas-grid {
+  z-index: 4;
+  opacity: 0.15;
+  background-image:
+    linear-gradient(rgba(158, 220, 218, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(158, 220, 218, 0.15) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(circle at 50% 48%, black, transparent 62%);
+}
+
+.atlas-scan {
+  z-index: 5;
+  opacity: 0.34;
+  background: linear-gradient(180deg, transparent 47%, rgba(54, 229, 215, 0.8) 50%, transparent 53%);
+  background-size: 100% 340px;
+  animation: atlasScan 6s linear infinite;
+  mix-blend-mode: screen;
+}
+
+.atlas-interface {
+  position: relative;
+  z-index: 6;
+  height: 100%;
+  pointer-events: none;
+}
+
+.atlas-copy {
+  position: absolute;
+  top: 50%;
+  left: clamp(24px, 6vw, 96px);
+  width: min(520px, 36vw);
+  transform: translateY(-55%);
+}
+
+.atlas-copy > p {
+  margin: 0 0 22px;
+  color: var(--cyan);
+  font-family: monospace;
+  font-size: 9px;
+  letter-spacing: 0.17em;
+}
+
+.atlas-copy h1 {
+  margin: 0;
+  font-size: clamp(58px, 6.6vw, 112px);
+  font-weight: 400;
+  line-height: 0.84;
+  letter-spacing: -0.075em;
+  text-transform: uppercase;
+}
+
+.atlas-copy > span {
+  display: block;
+  max-width: 480px;
+  margin-top: 28px;
+  color: #9eb2b3;
+  font-size: clamp(13px, 1vw, 16px);
+  line-height: 1.65;
+}
+
+.atlas-zone-card {
+  position: absolute;
+  top: 50%;
+  right: clamp(24px, 5vw, 76px);
+  width: min(375px, 27vw);
+  padding: 24px;
+  border: 1px solid rgba(169, 220, 218, 0.18);
+  background: rgba(4, 11, 14, 0.7);
+  backdrop-filter: blur(16px);
+  transform: translateY(-55%);
+  pointer-events: auto;
+}
+
+.atlas-zone-card > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  color: #62787a;
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.atlas-zone-card > div i {
+  padding: 5px 7px;
+  border: 1px solid rgba(255, 184, 77, 0.35);
+  color: var(--amber);
+  font-style: normal;
+}
+
+.atlas-zone-card > div i.is-live {
+  border-color: rgba(54, 229, 215, 0.4);
+  color: var(--cyan);
+}
+
+.atlas-zone-card h2 {
+  margin: 34px 0 15px;
+  font-size: clamp(28px, 2.7vw, 44px);
+  font-weight: 400;
+  line-height: 0.96;
+  letter-spacing: -0.055em;
+}
+
+.atlas-zone-card > p {
+  margin: 0;
+  color: #8ea2a4;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.atlas-zone-card > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 28px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-family: monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.atlas-zone-card > a span {
+  color: var(--cyan);
+}
+
+.atlas-next {
+  display: block;
+  margin-top: 28px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+  color: var(--amber);
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.atlas-nav {
+  position: absolute;
+  right: clamp(24px, 5vw, 76px);
+  bottom: 42px;
+  left: clamp(24px, 5vw, 76px);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: rgba(3, 9, 11, 0.64);
+  backdrop-filter: blur(13px);
+  pointer-events: auto;
+}
+
+.atlas-nav button {
+  position: relative;
+  min-height: 84px;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 17px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  color: #758a8c;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: color 220ms ease, background 220ms ease;
+}
+
+.atlas-nav button:last-child {
+  border-right: 0;
+}
+
+.atlas-nav button::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: 12px;
+  left: 12px;
+  height: 2px;
+  background: transparent;
+  transition: background 220ms ease, box-shadow 220ms ease;
+}
+
+.atlas-nav button:hover,
+.atlas-nav button.is-active {
+  color: var(--ink);
+  background: rgba(54, 229, 215, 0.055);
+}
+
+.atlas-nav button.is-active::before {
+  background: var(--cyan);
+  box-shadow: 0 0 12px rgba(54, 229, 215, 0.7);
+}
+
+.atlas-nav button > i {
+  color: #465b5d;
+  font-family: monospace;
+  font-size: 8px;
+  font-style: normal;
+}
+
+.atlas-nav button.is-active > i {
+  color: var(--cyan);
+}
+
+.atlas-nav button > span {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.atlas-nav button > b {
+  color: #4f6466;
+  font-family: monospace;
+  font-size: 7px;
+  font-weight: 400;
+}
+
+.atlas-nav button.is-active > b {
+  color: var(--cyan);
+}
+
+.atlas-target {
+  position: absolute;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  opacity: 0.86;
+  transition:
+    top 1100ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    right 1100ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    bottom 1100ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    left 1100ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.atlas-target i {
+  width: 27px;
+  height: 27px;
+  border: 1px solid var(--cyan);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 8px rgba(54, 229, 215, 0.06),
+    0 0 24px rgba(54, 229, 215, 0.45);
+  animation: targetPulse 2s ease-in-out infinite;
+}
+
+.atlas-target span {
+  color: var(--cyan-soft);
+  font-family: monospace;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.atlas-target--upper { top: 31%; left: 53%; }
+.atlas-target--lower { top: 61%; left: 53%; }
+.atlas-target--myofascial { top: 44%; left: 49%; }
+.atlas-target--paravertebral { top: 42%; left: 52%; }
+.atlas-target--neuraxial { top: 50%; left: 52%; }
+
+.atlas-data {
+  position: absolute;
+  right: clamp(24px, 5vw, 76px);
+  bottom: 18px;
+  left: clamp(24px, 5vw, 76px);
+  display: none;
+}
+
 .cinematic {
   position: relative;
   height: 640svh;
@@ -1912,7 +2278,34 @@ footer > span {
   50% { opacity: 1; }
 }
 
+@keyframes atlasScan {
+  from { background-position: 0 -340px; }
+  to { background-position: 0 calc(100vh + 340px); }
+}
+
+@keyframes targetPulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.88); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
 @media (max-width: 1050px) {
+  .atlas-copy {
+    width: 39vw;
+  }
+
+  .atlas-zone-card {
+    width: 31vw;
+  }
+
+  .atlas-nav button {
+    grid-template-columns: 22px 1fr;
+    padding: 13px 12px;
+  }
+
+  .atlas-nav button > b {
+    display: none;
+  }
+
   .hero {
     grid-template-columns: 1fr 0.8fr;
   }
@@ -1982,6 +2375,125 @@ footer > span {
   .header-meta .live-chip,
   .header-meta > a {
     display: none;
+  }
+
+  .atlas-hero {
+    height: 100svh;
+    min-height: 790px;
+  }
+
+  .atlas-vignette {
+    background:
+      linear-gradient(180deg, rgba(2, 6, 8, 0.82), rgba(2, 6, 8, 0.18) 26%, rgba(2, 6, 8, 0.34) 52%, rgba(2, 6, 8, 0.96) 75%),
+      radial-gradient(circle at 50% 40%, transparent 0, transparent 18%, rgba(2, 6, 8, 0.55) 76%);
+  }
+
+  .atlas-grid {
+    background-size: 62px 62px;
+  }
+
+  .atlas-copy {
+    top: 112px;
+    left: 20px;
+    width: calc(100% - 40px);
+    transform: none;
+  }
+
+  .atlas-copy > p {
+    margin-bottom: 14px;
+    font-size: 8px;
+  }
+
+  .atlas-copy h1 {
+    font-size: clamp(48px, 15vw, 68px);
+  }
+
+  .atlas-copy > span {
+    max-width: 350px;
+    margin-top: 17px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .atlas-zone-card {
+    top: auto;
+    right: 20px;
+    bottom: 132px;
+    left: 20px;
+    width: auto;
+    padding: 18px;
+    transform: none;
+  }
+
+  .atlas-zone-card h2 {
+    margin: 18px 0 10px;
+    font-size: 28px;
+  }
+
+  .atlas-zone-card > p {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+
+  .atlas-zone-card > a,
+  .atlas-next {
+    margin-top: 15px;
+    padding-top: 12px;
+  }
+
+  .atlas-nav {
+    right: 20px;
+    bottom: 22px;
+    left: 20px;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .atlas-nav button {
+    flex: 0 0 154px;
+    min-height: 78px;
+    grid-template-columns: 23px 1fr;
+    border-right: 1px solid var(--line);
+  }
+
+  .atlas-target {
+    opacity: 0.62;
+  }
+
+  .atlas-target span {
+    display: none;
+  }
+
+  .atlas-target--upper { top: 38%; left: 57%; }
+  .atlas-target--lower { top: 55%; left: 57%; }
+  .atlas-target--myofascial { top: 45%; left: 51%; }
+  .atlas-target--paravertebral { top: 44%; left: 55%; }
+  .atlas-target--neuraxial { top: 49%; left: 55%; }
+
+  .atlas-media[data-zone="upper"] video,
+  .atlas-media[data-zone="upper"] .atlas-poster {
+    transform: translate(0, 14vh) scale(1.65);
+  }
+
+  .atlas-media[data-zone="lower"] video,
+  .atlas-media[data-zone="lower"] .atlas-poster {
+    transform: translate(0, -16vh) scale(1.5);
+  }
+
+  .atlas-media[data-zone="myofascial"] video,
+  .atlas-media[data-zone="myofascial"] .atlas-poster {
+    transform: translate(0, 5vh) scale(1.65);
+  }
+
+  .atlas-media[data-zone="paravertebral"] video,
+  .atlas-media[data-zone="paravertebral"] .atlas-poster {
+    transform: translate(-3vw, 7vh) scale(1.75);
+  }
+
+  .atlas-media[data-zone="neuraxial"] video,
+  .atlas-media[data-zone="neuraxial"] .atlas-poster {
+    transform: translate(-2vw, 2vh) scale(1.9);
   }
 
   .cinematic {
@@ -2365,6 +2877,10 @@ footer > span {
     scroll-behavior: auto !important;
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .atlas-media video {
+    display: none;
   }
 
   .cinematic {
