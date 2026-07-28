@@ -31,6 +31,25 @@
    применения антитромботического маршрута.
 5. Числовые дозы и интервалы остаются заблокированными до локального утверждения.
 
+## Интерактивная карта фасциальных плоскостей
+
+| Интерфейс | Стандартизированное анатомическое название | Проекция |
+|---|---|---|
+| PEC I | Interpectoral plane | Передняя |
+| PEC II | Pectoserratus plane, вместе с interpectoral component | Передняя |
+| DEEP SAP | Deep serratus anterior plane | Боковая |
+| SPIP | Superficial parasternal intercostal plane | Передняя |
+| DPIP | Deep parasternal intercostal plane | Передняя |
+| TAP CLASSIC | Lateral transversus abdominis plane | Передняя |
+| TAP SUBCOSTAL | Subcostal transversus abdominis plane | Передняя |
+| RECTUS | Rectus sheath | Передняя |
+| QLB-1 | Lateral quadratus lumborum | Задняя |
+| QLB-2 | Posterior quadratus lumborum | Задняя |
+| QLB-3 | Anterior / transmuscular quadratus lumborum | Задняя |
+
+DPIP отмечается как advanced plane из-за близости internal thoracic artery,
+pleura и, слева, перикардиальных структур. Карта не изображает траекторию иглы.
+
 ## Опорные источники
 
 - ASRA–ESRA Delphi consensus: nomenclature of abdominal wall, paraspinal and
@@ -38,6 +57,9 @@
 - PROSPECT procedure-specific recommendations for thoracotomy, VATS,
   breast surgery, laparoscopic cholecystectomy, open colorectal surgery and
   caesarean section.
+- Douglas RN et al. Superficial versus deep parasternal intercostal plane
+  blocks: cadaveric evaluation of injectate spread. BJA 2024.
+  DOI: `10.1016/j.bja.2023.08.014`.
 
 Generated illustrations and coverage maps are navigation assets, not validated
 diagnostic anatomy.
