@@ -17,6 +17,19 @@ type UpperOperationId =
 type DiaphragmRisk = "Высокий" | "Умеренный" | "Низкий" | "Минимальный";
 type AtlasZoneId = "upper" | "lower" | "myofascial" | "paravertebral" | "neuraxial";
 type AtlasVisual = "front" | "posterior" | "shoulder-fracture" | "hip-arthroplasty";
+type TrunkOperationId =
+  | "thoracotomy"
+  | "vats"
+  | "sternotomy"
+  | "breast"
+  | "ribs"
+  | "device"
+  | "laparotomy"
+  | "cholecystectomy"
+  | "colorectal"
+  | "caesarean"
+  | "hernia"
+  | "flank";
 
 const atlasZones: Array<{
   id: AtlasZoneId;
@@ -66,7 +79,8 @@ const atlasZones: Array<{
       "Навигация по фасциальным пространствам, зоне хирургического доступа и ожидаемому распространению раствора.",
     visual: "front",
     visualLabel: "ПЕРЕДНЯЯ ПРОЕКЦИЯ / ФАСЦИАЛЬНЫЕ ПЛОСКОСТИ",
-    status: "NEXT",
+    status: "LIVE",
+    href: "#trunk-wall",
   },
   {
     id: "paravertebral",
@@ -416,6 +430,324 @@ const anesthetics = [
   { id: "levobupivacaine", label: "Левобупивакаин", concentration: 0.25 },
   { id: "bupivacaine", label: "Бупивакаин", concentration: 0.25 },
   { id: "lidocaine", label: "Лидокаин", concentration: 1 },
+];
+
+const trunkOperations: Array<{
+  id: TrunkOperationId;
+  short: string;
+  title: string;
+  zone: string;
+  innervation: string;
+  visceral: string;
+  gap: string;
+  strategies: Array<{
+    name: string;
+    blocks: string;
+    reach: string;
+    safety: string;
+    note: string;
+  }>;
+}> = [
+  {
+    id: "thoracotomy",
+    short: "Торакотомия",
+    title: "Открытая торакотомия",
+    zone: "Заднебоковой или переднебоковой разрез, межрёберные мышцы, рёбра, плевра и зона дренажей.",
+    innervation: "Сегментарные межрёберные нервы; уровень и протяжённость зависят от разреза и расположения дренажей.",
+    visceral: "Плевральная и глубокая боль не эквивалентны боли грудной стенки; требуется мультимодальная стратегия.",
+    gap: "Плечо, медиальный край разреза, дренажи и сегменты выше/ниже предполагаемого распространения.",
+    strategies: [
+      {
+        name: "Первая линия",
+        blocks: "Грудная эпидуральная или паравертебральный катетер",
+        reach: "Сегментарное глубокое покрытие",
+        safety: "ГЛУБОКАЯ ТЕХНИКА",
+        note: "PROSPECT рассматривает обе стратегии как варианты первой линии; выбор зависит от пациента, гемодинамики и противопоказаний.",
+      },
+      {
+        name: "Альтернатива",
+        blocks: "ESP / rhomboid intercostal / межрёберные блоки",
+        reach: "Задняя и латеральная грудная стенка",
+        safety: "ПЛЕВРА · LAST",
+        note: "Кандидаты, когда эпидуральная или паравертебральная техника не используются; дренажи проверяются отдельно.",
+      },
+    ],
+  },
+  {
+    id: "vats",
+    short: "VATS",
+    title: "Видеоассистированная торакоскопия",
+    zone: "Несколько портов по латеральной грудной стенке и отдельная зона плеврального дренажа.",
+    innervation: "Межрёберные нервы соответствующих уровней; каждый порт создаёт собственную соматическую территорию.",
+    visceral: "Раздражение плевры и внутригрудные манипуляции могут сохранять боль вне кожного покрытия.",
+    gap: "Самый нижний порт, задний порт и зона дренажа после удаления торакоскопов.",
+    strategies: [
+      {
+        name: "Сегментарная",
+        blocks: "Паравертебральный блок или ESP, single-shot / катетер",
+        reach: "Порты и заднебоковая стенка",
+        safety: "ГЛУБИНА · ПЛЕВРА",
+        note: "Уровень блока сопоставляется с уровнями портов; катетер рассматривается при ожидаемой продолжительной боли.",
+      },
+      {
+        name: "Латеральная",
+        blocks: "Serratus anterior plane / межрёберные блоки",
+        reach: "Латеральная грудная стенка",
+        safety: "LAST · СОСУДЫ",
+        note: "Полезна при латеральных портах; медиальные и задние территории могут потребовать другого компонента.",
+      },
+    ],
+  },
+  {
+    id: "sternotomy",
+    short: "Стернотомия",
+    title: "Срединная стернотомия",
+    zone: "Кожа и мягкие ткани парастернально, грудина, медиальные отделы грудной стенки и места дренажей.",
+    innervation: "Передние кожные ветви межрёберных нервов, преимущественно T2–T6.",
+    visceral: "Стернальная аналгезия не заменяет контроль глубокой медиастинальной боли и общей мультимодальной схемы.",
+    gap: "Верхний край разреза, субксифоидальные дренажи и латеральное распространение.",
+    strategies: [
+      {
+        name: "Поверхностная парастернальная",
+        blocks: "Pecto-intercostal fascial plane block",
+        reach: "Передняя медиальная грудная стенка",
+        safety: "СОСУДЫ · LAST",
+        note: "Плоскость выбирается с визуализацией внутренних грудных сосудов; двусторонняя доза суммируется.",
+      },
+      {
+        name: "Глубокая парастернальная",
+        blocks: "Deep parasternal intercostal plane block",
+        reach: "Парастернальные ветви T2–T6",
+        safety: "ПЛЕВРА · ПЕРИКАРД",
+        note: "Более глубокая цель рядом с плеврой и внутренней грудной артерией требует непрерывной визуализации кончика иглы.",
+      },
+    ],
+  },
+  {
+    id: "breast",
+    short: "Молочная железа",
+    title: "Онкологическая операция на молочной железе",
+    zone: "Передняя грудная стенка, ткань молочной железы, подмышечная зона и возможная донорская область.",
+    innervation: "Межрёберные нервы, латеральные и передние кожные ветви; pectoral nerves и intercostobrachial territory при аксиллярном доступе.",
+    visceral: "Основной компонент боли соматический, но реконструктивный этап может добавлять отдельную донорскую зону.",
+    gap: "Медиальный край у грудины, надключичная зона, intercostobrachial territory и дренажи.",
+    strategies: [
+      {
+        name: "Паравертебральная",
+        blocks: "Thoracic paravertebral block",
+        reach: "Одностороннее сегментарное покрытие",
+        safety: "ГЛУБОКАЯ ТЕХНИКА",
+        note: "PROSPECT рекомендует как регионарную стратегию первой линии для онкологической хирургии молочной железы.",
+      },
+      {
+        name: "Переднебоковая",
+        blocks: "PECS II ± pecto-intercostal fascial plane",
+        reach: "Грудная стенка и аксиллярный компонент",
+        safety: "СОСУДЫ · LAST",
+        note: "PECS может быть альтернативой; медиальный край разреза и надключичная территория проверяются отдельно.",
+      },
+    ],
+  },
+  {
+    id: "ribs",
+    short: "Переломы рёбер",
+    title: "Множественные переломы рёбер",
+    zone: "Зона переломов может быть задней, латеральной или передней и охватывать несколько несмежных уровней.",
+    innervation: "Сегментарные межрёберные нервы и коллатеральные ветви; карта боли должна совпасть с КТ и пальпацией.",
+    visceral: "Ушиб лёгкого, гемоторакс и дыхательная недостаточность не устраняются блокадой грудной стенки.",
+    gap: "Задние переломы при латеральной технике, передние переломы при ESP и уровни за пределами распространения.",
+    strategies: [
+      {
+        name: "Задняя плоскость",
+        blocks: "ESP / паравертебральный блок",
+        reach: "Задняя и часть латеральной стенки",
+        safety: "ПЛЕВРА · КАТЕТЕР",
+        note: "Выбор уровня и катетера зависит от протяжённости травмы и возможности безопасного позиционирования.",
+      },
+      {
+        name: "Латеральная плоскость",
+        blocks: "Serratus anterior plane / межрёберные блоки",
+        reach: "Латеральные рёбра",
+        safety: "LAST · ГЕМАТОМА",
+        note: "Положение переломов важнее их количества; передние и задние участки могут остаться вне покрытия.",
+      },
+    ],
+  },
+  {
+    id: "device",
+    short: "ЭКС / ICD",
+    title: "Имплантация кардиального устройства",
+    zone: "Подключичный карман, кожный разрез, фасция большой грудной мышцы и путь электродов.",
+    innervation: "Надключичные нервы и передние кожные ветви верхних межрёберных нервов; вариабельный вклад pectoral nerves.",
+    visceral: "Фасциальный блок не заменяет седационную стратегию и контроль боли при венозном доступе и манипуляции электродами.",
+    gap: "Кожа над ключицей, медиальный край кармана и зона туннелирования.",
+    strategies: [
+      {
+        name: "Локальная",
+        blocks: "Инфильтрация хирургом ± селективные поверхностные ветви",
+        reach: "Карман и кожный разрез",
+        safety: "СОСУДЫ · АНТИКОАГУЛЯЦИЯ",
+        note: "Базовая стратегия сопоставляется с конкретным положением кармана и режимом антитромботической терапии.",
+      },
+      {
+        name: "Фасциальная",
+        blocks: "PECS I / pecto-intercostal fascial plane",
+        reach: "Грудная фасция и медиальный край",
+        safety: "LAST · СОСУДЫ",
+        note: "Кандидатное дополнение; надключичная кожная территория может потребовать отдельного контроля.",
+      },
+    ],
+  },
+  {
+    id: "laparotomy",
+    short: "Лапаротомия",
+    title: "Срединная открытая лапаротомия",
+    zone: "Вертикальный разрез по средней линии, влагалище прямой мышцы, брюшина и зона дренажей.",
+    innervation: "Передние кожные ветви торакоабдоминальных нервов; уровни определяются верхним и нижним краем разреза.",
+    visceral: "Блоки брюшной стенки не обеспечивают полноценную висцеральную аналгезию.",
+    gap: "Верхний/нижний край длинного разреза, брюшина, дренажи и стома.",
+    strategies: [
+      {
+        name: "Нейроаксиальная",
+        blocks: "Грудная эпидуральная аналгезия",
+        reach: "Соматический и висцеральный компоненты",
+        safety: "НЕЙРОАКСИАЛЬНАЯ",
+        note: "Кандидат для большой открытой хирургии при отсутствии противопоказаний и в рамках локального ERAS-протокола.",
+      },
+      {
+        name: "Стенка живота",
+        blocks: "Rectus sheath ± subcostal/lateral TAP",
+        reach: "Передняя брюшная стенка",
+        safety: "LAST · БРЮШИНА",
+        note: "Выбор плоскости привязывается к разрезу; висцеральный компонент остаётся отдельной задачей.",
+      },
+    ],
+  },
+  {
+    id: "cholecystectomy",
+    short: "Лап. холецистэктомия",
+    title: "Лапароскопическая холецистэктомия",
+    zone: "Эпигастральный и подреберные порты, умбиликальный порт и зона извлечения препарата.",
+    innervation: "Торакоабдоминальные нервы передней брюшной стенки; каждый порт оценивается отдельно.",
+    visceral: "Пневмоперитонеум, диафрагмальное раздражение и отражённая боль в плече не покрываются обычным TAP.",
+    gap: "Эпигастральный порт, умбиликальная экстракция и отражённая боль в плече.",
+    strategies: [
+      {
+        name: "Процедурная первая линия",
+        blocks: "Инфильтрация портов / intraperitoneal LA по протоколу",
+        reach: "Порт-сайты",
+        safety: "СУММАРНАЯ ДОЗА",
+        note: "PROSPECT ставит локальные техники впереди фасциальных блоков при стандартном лапароскопическом течении.",
+      },
+      {
+        name: "Вторая линия",
+        blocks: "Subcostal TAP или ESP",
+        reach: "Подреберная стенка",
+        safety: "LAST · ПЛЕВРА",
+        note: "Рассматривается в специальных ситуациях; не должно автоматически добавляться к оптимальной базовой аналгезии.",
+      },
+    ],
+  },
+  {
+    id: "colorectal",
+    short: "Колоректальная",
+    title: "Открытая колоректальная операция",
+    zone: "Срединная или поперечная лапаротомия, зона стомы, дренажи и промежностный этап при комбинированном доступе.",
+    innervation: "Торакоабдоминальные нервы соответствующих уровней; промежностная зона имеет отдельную иннервацию.",
+    visceral: "Манипуляции на кишечнике формируют выраженный висцеральный компонент.",
+    gap: "Стома, дренажи, промежностная рана и зоны вне протяжённости выбранной плоскости.",
+    strategies: [
+      {
+        name: "Первая линия для open",
+        blocks: "Грудная эпидуральная аналгезия",
+        reach: "Разрез и висцеральный компонент",
+        safety: "НЕЙРОАКСИАЛЬНАЯ",
+        note: "Актуальный PROSPECT сохраняет эпидуральную аналгезию для открытой колэктомии.",
+      },
+      {
+        name: "Если эпидуральная невозможна",
+        blocks: "Двусторонний TAP / preperitoneal wound infusion",
+        reach: "Соматическая боль стенки",
+        safety: "СУММАРНАЯ ДОЗА",
+        note: "Не сочетать несколько путей местного анестетика без расчёта общей дозы; висцеральная боль требует отдельного плана.",
+      },
+    ],
+  },
+  {
+    id: "caesarean",
+    short: "Кесарево сечение",
+    title: "Плановое кесарево сечение",
+    zone: "Поперечный надлобковый разрез, мышечно-фасциальные слои и матка.",
+    innervation: "TAP/ilioinguinal-iliohypogastric territory для брюшной стенки; висцеральная афферентация матки отдельна.",
+    visceral: "Фасциальный блок не заменяет нейроаксиальную анестезию и интратекальный длительно действующий опиоид.",
+    gap: "Висцеральная боль, медиальная часть разреза и двусторонняя симметрия покрытия.",
+    strategies: [
+      {
+        name: "Стандарт",
+        blocks: "Нейроаксиальная анестезия + длительно действующий нейроаксиальный опиоид",
+        reach: "Хирургическая анестезия и послеоперационная аналгезия",
+        safety: "НЕЙРОАКСИАЛЬНАЯ",
+        note: "Обновлённый PROSPECT 2026 сохраняет эту стратегию основной для планового кесарева сечения.",
+      },
+      {
+        name: "Если нейроаксиальный опиоид не использован",
+        blocks: "TAP / QL / II-IH / transversalis fascia",
+        reach: "Брюшная стенка",
+        safety: "LAST · БРЮШИНА",
+        note: "Фасциальные и нервные блокады рассматриваются как альтернативный компонент послеоперационной аналгезии.",
+      },
+    ],
+  },
+  {
+    id: "hernia",
+    short: "Паховая грыжа",
+    title: "Открытая паховая герниопластика",
+    zone: "Кожа паховой области, апоневроз наружной косой мышцы, паховый канал и зона сетки.",
+    innervation: "Ilioinguinal, iliohypogastric и genital branch genitofemoral nerve с индивидуальной вариабельностью.",
+    visceral: "Манипуляции с грыжевым мешком и брюшиной могут оставлять глубокий компонент боли.",
+    gap: "Лобковый бугорок, мошоночная/лабиальная территория и вариабельная генитальная ветвь.",
+    strategies: [
+      {
+        name: "Селективная",
+        blocks: "Ilioinguinal–iliohypogastric block + инфильтрация",
+        reach: "Паховый разрез",
+        safety: "СОСУДЫ · БРЮШИНА",
+        note: "УЗ-навигация помогает сопоставить нервы и хирургическую зону, но не устраняет анатомическую вариабельность.",
+      },
+      {
+        name: "Проксимальная плоскость",
+        blocks: "Transversalis fascia plane / posterior TAP",
+        reach: "T12–L1 территория",
+        safety: "LAST · РЕТРОПЕРИТОНЕУМ",
+        note: "TFP ориентирован на более проксимальное покрытие II/IH; возможное распространение оценивается отдельно.",
+      },
+    ],
+  },
+  {
+    id: "flank",
+    short: "Боковой доступ",
+    title: "Фланковый и ретроперитонеальный доступ",
+    zone: "Подреберный или фланковый разрез через боковую брюшную стенку, иногда с пересечением нескольких мышечных слоёв.",
+    innervation: "Нижние торакоабдоминальные нервы, subcostal nerve и верхние ветви поясничного сплетения.",
+    visceral: "Почка, мочеточник и ретроперитонеальные структуры формируют глубокий висцеральный компонент.",
+    gap: "Задний край разреза, подреберная дуга, паховая территория и дренаж.",
+    strategies: [
+      {
+        name: "Боковая стенка",
+        blocks: "Subcostal TAP / QL",
+        reach: "Подреберная и фланковая стенка",
+        safety: "ПОЧКА · БРЮШИНА",
+        note: "Точка инъекции и вариант QL выбираются по траектории разреза, глубине и антитромботическому профилю.",
+      },
+      {
+        name: "Параспинальная",
+        blocks: "ESP / paravertebral block",
+        reach: "Заднебоковые сегменты",
+        safety: "ГЛУБОКАЯ ТЕХНИКА",
+        note: "Кандидат при длинном заднебоковом разрезе; висцеральное покрытие не считается гарантированным.",
+      },
+    ],
+  },
 ];
 
 function BodyAtlasHero() {
@@ -1121,6 +1453,161 @@ function UpperLimbModule() {
   );
 }
 
+function TrunkWallModule() {
+  const [operationId, setOperationId] = useState<TrunkOperationId>("thoracotomy");
+  const [strategyIndex, setStrategyIndex] = useState(0);
+  const operation =
+    trunkOperations.find((item) => item.id === operationId) ?? trunkOperations[0];
+  const strategy = operation.strategies[strategyIndex] ?? operation.strategies[0];
+
+  const chooseOperation = (id: TrunkOperationId) => {
+    setOperationId(id);
+    setStrategyIndex(0);
+  };
+
+  return (
+    <section className="upper-module trunk-module" id="trunk-wall">
+      <div className="upper-heading">
+        <p className="section-kicker"><span>05</span> TRUNK WALL / ALPHA</p>
+        <h2>Грудная и<br />брюшная стенка.</h2>
+        <div className="upper-intro">
+          <p>
+            Навигатор связывает форму разреза, уровни иннервации и фасциальную
+            плоскость — и отдельно показывает висцеральный компонент боли.
+          </p>
+          <span>12 СЦЕНАРИЕВ · ASRA/ESRA NOMENCLATURE · PROSPECT</span>
+        </div>
+      </div>
+
+      <div className="clinical-shell">
+        <nav className="operation-rail" aria-label="Операции на грудной и брюшной стенке">
+          <span className="rail-title">01 / ОПЕРАЦИЯ</span>
+          {trunkOperations.map((item, index) => (
+            <button
+              type="button"
+              key={item.id}
+              className={operation.id === item.id ? "is-active" : ""}
+              onClick={() => chooseOperation(item.id)}
+              aria-pressed={operation.id === item.id}
+            >
+              <i>{String(index + 1).padStart(2, "0")}</i>
+              <span>{item.short}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="clinical-content">
+          <div className="case-overview">
+            <div>
+              <span className="micro-label">ВЫБРАННЫЙ КЕЙС</span>
+              <h3>{operation.title}</h3>
+            </div>
+            <span className="prototype-chip">SOMATIC ≠ VISCERAL</span>
+          </div>
+
+          <div className="clinical-map-grid clinical-map-grid--trunk">
+            <article>
+              <span>ХИРУРГИЧЕСКАЯ ЗОНА</span>
+              <p>{operation.zone}</p>
+            </article>
+            <article>
+              <span>ИННЕРВАЦИЯ СТЕНКИ</span>
+              <p>{operation.innervation}</p>
+            </article>
+            <article className="visceral-card">
+              <span>ВИСЦЕРАЛЬНЫЙ КОМПОНЕНТ</span>
+              <p>{operation.visceral}</p>
+            </article>
+            <article className="gap-card">
+              <span>ОБЯЗАТЕЛЬНО ПРОВЕРИТЬ</span>
+              <p>{operation.gap}</p>
+            </article>
+          </div>
+
+          <div className="strategy-header">
+            <span className="micro-label">02 / СРАВНЕНИЕ СТРАТЕГИЙ</span>
+            <p>Фасциальная плоскость выбирается по разрезу, а не только по названию операции.</p>
+          </div>
+
+          <div className="upper-strategies">
+            {operation.strategies.map((item, index) => (
+              <button
+                type="button"
+                key={`${operation.id}-${item.name}`}
+                className={strategyIndex === index ? "is-active" : ""}
+                onClick={() => setStrategyIndex(index)}
+                aria-pressed={strategyIndex === index}
+              >
+                <span className="strategy-topline">
+                  <i>{String(index + 1).padStart(2, "0")}</i>
+                  <span className="risk-chip risk-chip--warning">{item.safety}</span>
+                </span>
+                <strong>{item.name}</strong>
+                <b>{item.blocks}</b>
+                <span className="motor-line">ОЖИДАЕМАЯ ЗОНА / {item.reach}</span>
+                <p>{item.note}</p>
+              </button>
+            ))}
+          </div>
+
+          <div className="selection-summary" aria-live="polite">
+            <span>ТЕКУЩИЙ ФОКУС</span>
+            <b>{strategy.blocks}</b>
+            <div>
+              <span>{strategy.reach}</span>
+              <span className="risk-chip risk-chip--warning">{strategy.safety}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="trunk-principles">
+        <article>
+          <span>03 / SOMATIC MAP</span>
+          <h3>Разрез сначала.</h3>
+          <p>
+            Верхний и нижний край, латеральность, дренажи, стома и донорская зона
+            формируют карту покрытия до выбора названия блока.
+          </p>
+        </article>
+        <article>
+          <span>04 / VISCERAL CHECK</span>
+          <h3>Стенка — не вся операция.</h3>
+          <p>
+            TAP, rectus sheath, PECS и serratus plane в первую очередь адресуют
+            соматическую боль стенки. Висцеральный компонент отображается отдельно.
+          </p>
+        </article>
+        <article>
+          <span>05 / SAFETY</span>
+          <h3>Суммарная доза.</h3>
+          <p>
+            Двусторонние и многоплоскостные техники, инфильтрация хирургом и другие
+            пути местного анестетика должны суммироваться в калькуляторе LAST.
+          </p>
+        </article>
+      </div>
+
+      <div className="module-sources">
+        <span>ОПОРНЫЕ ИСТОЧНИКИ</span>
+        <a href="https://asra.com/news-publications/asra-updates/blog-landing/guidelines/2021/02/01/standardizing-nomenclature-in-regional-anesthesia"
+          target="_blank" rel="noreferrer">ASRA–ESRA nomenclature consensus ↗</a>
+        <a href="https://esraeurope.org/prospect/"
+          target="_blank" rel="noreferrer">PROSPECT procedure-specific recommendations ↗</a>
+      </div>
+
+      <div className="module-disclaimer">
+        <b>ALPHA / EDUCATIONAL DECISION SUPPORT</b>
+        <p>
+          Это карта для клинического обсуждения, а не автоматическое назначение.
+          Дерматомы, распространение раствора, риски и рекомендации требуют
+          экспертной верификации и сопоставления с локальным протоколом.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [strategy, setStrategy] = useState<Strategy>("balanced");
   const [query, setQuery] = useState("Тотальное эндопротезирование коленного сустава");
@@ -1210,6 +1697,7 @@ export default function Home() {
       </section>
 
       <UpperLimbModule />
+      <TrunkWallModule />
 
       <section className="evidence">
         <div>
@@ -1232,7 +1720,7 @@ export default function Home() {
         <p>
           Демонстрационный прототип для обсуждения логики продукта. Не является клинической рекомендацией и требует экспертной валидации перед применением.
         </p>
-        <span>VERSION 0.4 / 2026</span>
+        <span>VERSION 0.5 / 2026</span>
       </footer>
     </main>
   );
