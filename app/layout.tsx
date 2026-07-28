@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "POCUS MOSCOW — Block Planner Demo",
   description:
-    "Интерактивный прототип планировщика регионарной анестезии для операций нижней конечности.",
+    "Интерактивный образовательный планировщик регионарной анестезии для операций нижней и верхней конечности.",
   other: {
     "codex-preview": "development",
   },
