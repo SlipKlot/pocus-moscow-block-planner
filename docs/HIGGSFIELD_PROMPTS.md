@@ -37,3 +37,35 @@ Generated anatomy is an expressive navigation layer, not a validated anatomical
 diagram. Exact nerve paths, injection targets and coverage territories must be
 drawn and reviewed separately before clinical use.
 
+## Digital Human Atlas — keyframe
+
+```text
+Cinematic medical technology hero image for POCUS MOSCOW Block Planner.
+A single gender-neutral adult human figure, full body, standing upright in
+anatomical position, centered, front three-quarter view, realistic but
+non-identifiable digital human, wearing a seamless dark graphite clinical
+bodysuit. Subtle translucent anatomical light layers beneath the suit:
+shoulder girdle and upper limb neural paths, lower limb neural paths,
+thoracolumbar fascia, paravertebral column and neuraxial spine. Deep black-teal
+laboratory environment, cyan ultrasound glow, amber secondary accents,
+premium medical visualization, high contrast, generous negative space for
+website interface. No organs exposed, no gore, no needles, no procedure,
+no text, no labels, no logos, no watermark. Entire body visible.
+```
+
+## Digital Human Atlas — ambient loop
+
+```text
+Animate this exact medical digital human as a seamless ambient website hero
+loop. Keep the full body centered and anatomically stable, with only subtle
+natural breathing, minimal posture micro-motion, delicate cyan ultrasound
+light scanning across the body and softly pulsing neural highlights. Locked
+camera, no zoom, no pan, no cut, no morphing, no extra people, no text, no
+labels, no needles, no medical procedure, no gore. Preserve face, hands, body
+proportions, suit, equipment and laboratory environment. End pose and lighting
+should match the opening frame.
+```
+
+The interactive camera move is implemented in the browser. Selecting a clinical
+direction smoothly changes the video scale and transform origin so the same
+Higgsfield model remains consistent across all five anatomical routes.
