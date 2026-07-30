@@ -16,6 +16,33 @@ type UpperOperationId =
   | "tendon";
 type DiaphragmRisk = "Высокий" | "Умеренный" | "Низкий" | "Минимальный";
 type AtlasZoneId = "upper" | "lower" | "myofascial" | "paravertebral" | "neuraxial";
+type AtlasVisual = "front" | "posterior" | "shoulder-fracture" | "hip-arthroplasty";
+type TrunkOperationId =
+  | "thoracotomy"
+  | "vats"
+  | "sternotomy"
+  | "breast"
+  | "ribs"
+  | "device"
+  | "laparotomy"
+  | "cholecystectomy"
+  | "colorectal"
+  | "caesarean"
+  | "hernia"
+  | "flank";
+type TrunkProjection = "front" | "side" | "back";
+type TrunkBlockId =
+  | "pec1"
+  | "pec2"
+  | "deep-serratus"
+  | "spip"
+  | "dpip"
+  | "tap-classic"
+  | "tap-subcostal"
+  | "rectus-sheath"
+  | "ql1"
+  | "ql2"
+  | "ql3";
 
 const atlasZones: Array<{
   id: AtlasZoneId;
@@ -24,6 +51,8 @@ const atlasZones: Array<{
   title: string;
   focus: string;
   description: string;
+  visual: AtlasVisual;
+  visualLabel: string;
   status: "LIVE" | "NEXT";
   href?: string;
 }> = [
@@ -35,6 +64,8 @@ const atlasZones: Array<{
     focus: "BRACHIAL PLEXUS / UPPER LIMB",
     description:
       "Остеосинтез ключицы, плеча, предплечья и кисти. Сравнение стратегий с оценкой риска диафрагмальной дисфункции.",
+    visual: "shoulder-fracture",
+    visualLabel: "ПЕРЕЛОМ ХИРУРГИЧЕСКОЙ ШЕЙКИ ПЛЕЧА",
     status: "LIVE",
     href: "#upper-limb",
   },
@@ -46,6 +77,8 @@ const atlasZones: Array<{
     focus: "LUMBOSACRAL PLEXUS / LOWER LIMB",
     description:
       "Операция, хирургическая зона, нервные территории, мотор-сберегающие стратегии и ожидаемые слепые зоны.",
+    visual: "hip-arthroplasty",
+    visualLabel: "ТОТАЛЬНОЕ ЭНДОПРОТЕЗИРОВАНИЕ ТБС",
     status: "LIVE",
     href: "#planner",
   },
@@ -57,7 +90,10 @@ const atlasZones: Array<{
     focus: "FASCIAL PLANES / TRUNK",
     description:
       "Навигация по фасциальным пространствам, зоне хирургического доступа и ожидаемому распространению раствора.",
-    status: "NEXT",
+    visual: "front",
+    visualLabel: "ПЕРЕДНЯЯ ПРОЕКЦИЯ / ФАСЦИАЛЬНЫЕ ПЛОСКОСТИ",
+    status: "LIVE",
+    href: "#trunk-wall",
   },
   {
     id: "paravertebral",
@@ -67,6 +103,8 @@ const atlasZones: Array<{
     focus: "PARAVERTEBRAL SPACE",
     description:
       "Уровень вмешательства, дерматомное покрытие, плевра, сосудистые структуры и контроль распространения.",
+    visual: "posterior",
+    visualLabel: "ЗАДНЯЯ ПРОЕКЦИЯ / ПАРАВЕРТЕБРАЛЬНАЯ ЗОНА",
     status: "NEXT",
   },
   {
@@ -77,6 +115,8 @@ const atlasZones: Array<{
     focus: "NEURAXIAL / SPINE",
     description:
       "Выбор уровня, предоперационная УЗ-разметка, срединный и парамедианный доступ, антитромботический контроль.",
+    visual: "posterior",
+    visualLabel: "ЗАДНЯЯ ПРОЕКЦИЯ / НЕЙРОАКСИАЛЬНАЯ ОСЬ",
     status: "NEXT",
   },
 ];
@@ -405,6 +445,482 @@ const anesthetics = [
   { id: "lidocaine", label: "Лидокаин", concentration: 1 },
 ];
 
+const trunkOperations: Array<{
+  id: TrunkOperationId;
+  short: string;
+  title: string;
+  zone: string;
+  innervation: string;
+  visceral: string;
+  gap: string;
+  strategies: Array<{
+    name: string;
+    blocks: string;
+    reach: string;
+    safety: string;
+    note: string;
+  }>;
+}> = [
+  {
+    id: "thoracotomy",
+    short: "Торакотомия",
+    title: "Открытая торакотомия",
+    zone: "Заднебоковой или переднебоковой разрез, межрёберные мышцы, рёбра, плевра и зона дренажей.",
+    innervation: "Сегментарные межрёберные нервы; уровень и протяжённость зависят от разреза и расположения дренажей.",
+    visceral: "Плевральная и глубокая боль не эквивалентны боли грудной стенки; требуется мультимодальная стратегия.",
+    gap: "Плечо, медиальный край разреза, дренажи и сегменты выше/ниже предполагаемого распространения.",
+    strategies: [
+      {
+        name: "Первая линия",
+        blocks: "Грудная эпидуральная или паравертебральный катетер",
+        reach: "Сегментарное глубокое покрытие",
+        safety: "ГЛУБОКАЯ ТЕХНИКА",
+        note: "PROSPECT рассматривает обе стратегии как варианты первой линии; выбор зависит от пациента, гемодинамики и противопоказаний.",
+      },
+      {
+        name: "Альтернатива",
+        blocks: "ESP / rhomboid intercostal / межрёберные блоки",
+        reach: "Задняя и латеральная грудная стенка",
+        safety: "ПЛЕВРА · LAST",
+        note: "Кандидаты, когда эпидуральная или паравертебральная техника не используются; дренажи проверяются отдельно.",
+      },
+    ],
+  },
+  {
+    id: "vats",
+    short: "VATS",
+    title: "Видеоассистированная торакоскопия",
+    zone: "Несколько портов по латеральной грудной стенке и отдельная зона плеврального дренажа.",
+    innervation: "Межрёберные нервы соответствующих уровней; каждый порт создаёт собственную соматическую территорию.",
+    visceral: "Раздражение плевры и внутригрудные манипуляции могут сохранять боль вне кожного покрытия.",
+    gap: "Самый нижний порт, задний порт и зона дренажа после удаления торакоскопов.",
+    strategies: [
+      {
+        name: "Сегментарная",
+        blocks: "Паравертебральный блок или ESP, single-shot / катетер",
+        reach: "Порты и заднебоковая стенка",
+        safety: "ГЛУБИНА · ПЛЕВРА",
+        note: "Уровень блока сопоставляется с уровнями портов; катетер рассматривается при ожидаемой продолжительной боли.",
+      },
+      {
+        name: "Латеральная",
+        blocks: "Serratus anterior plane / межрёберные блоки",
+        reach: "Латеральная грудная стенка",
+        safety: "LAST · СОСУДЫ",
+        note: "Полезна при латеральных портах; медиальные и задние территории могут потребовать другого компонента.",
+      },
+    ],
+  },
+  {
+    id: "sternotomy",
+    short: "Стернотомия",
+    title: "Срединная стернотомия",
+    zone: "Кожа и мягкие ткани парастернально, грудина, медиальные отделы грудной стенки и места дренажей.",
+    innervation: "Передние кожные ветви межрёберных нервов, преимущественно T2–T6.",
+    visceral: "Стернальная аналгезия не заменяет контроль глубокой медиастинальной боли и общей мультимодальной схемы.",
+    gap: "Верхний край разреза, субксифоидальные дренажи и латеральное распространение.",
+    strategies: [
+      {
+        name: "Поверхностная парастернальная",
+        blocks: "Pecto-intercostal fascial plane block",
+        reach: "Передняя медиальная грудная стенка",
+        safety: "СОСУДЫ · LAST",
+        note: "Плоскость выбирается с визуализацией внутренних грудных сосудов; двусторонняя доза суммируется.",
+      },
+      {
+        name: "Глубокая парастернальная",
+        blocks: "Deep parasternal intercostal plane block",
+        reach: "Парастернальные ветви T2–T6",
+        safety: "ПЛЕВРА · ПЕРИКАРД",
+        note: "Более глубокая цель рядом с плеврой и внутренней грудной артерией требует непрерывной визуализации кончика иглы.",
+      },
+    ],
+  },
+  {
+    id: "breast",
+    short: "Молочная железа",
+    title: "Онкологическая операция на молочной железе",
+    zone: "Передняя грудная стенка, ткань молочной железы, подмышечная зона и возможная донорская область.",
+    innervation: "Межрёберные нервы, латеральные и передние кожные ветви; pectoral nerves и intercostobrachial territory при аксиллярном доступе.",
+    visceral: "Основной компонент боли соматический, но реконструктивный этап может добавлять отдельную донорскую зону.",
+    gap: "Медиальный край у грудины, надключичная зона, intercostobrachial territory и дренажи.",
+    strategies: [
+      {
+        name: "Паравертебральная",
+        blocks: "Thoracic paravertebral block",
+        reach: "Одностороннее сегментарное покрытие",
+        safety: "ГЛУБОКАЯ ТЕХНИКА",
+        note: "PROSPECT рекомендует как регионарную стратегию первой линии для онкологической хирургии молочной железы.",
+      },
+      {
+        name: "Переднебоковая",
+        blocks: "PECS II ± pecto-intercostal fascial plane",
+        reach: "Грудная стенка и аксиллярный компонент",
+        safety: "СОСУДЫ · LAST",
+        note: "PECS может быть альтернативой; медиальный край разреза и надключичная территория проверяются отдельно.",
+      },
+    ],
+  },
+  {
+    id: "ribs",
+    short: "Переломы рёбер",
+    title: "Множественные переломы рёбер",
+    zone: "Зона переломов может быть задней, латеральной или передней и охватывать несколько несмежных уровней.",
+    innervation: "Сегментарные межрёберные нервы и коллатеральные ветви; карта боли должна совпасть с КТ и пальпацией.",
+    visceral: "Ушиб лёгкого, гемоторакс и дыхательная недостаточность не устраняются блокадой грудной стенки.",
+    gap: "Задние переломы при латеральной технике, передние переломы при ESP и уровни за пределами распространения.",
+    strategies: [
+      {
+        name: "Задняя плоскость",
+        blocks: "ESP / паравертебральный блок",
+        reach: "Задняя и часть латеральной стенки",
+        safety: "ПЛЕВРА · КАТЕТЕР",
+        note: "Выбор уровня и катетера зависит от протяжённости травмы и возможности безопасного позиционирования.",
+      },
+      {
+        name: "Латеральная плоскость",
+        blocks: "Serratus anterior plane / межрёберные блоки",
+        reach: "Латеральные рёбра",
+        safety: "LAST · ГЕМАТОМА",
+        note: "Положение переломов важнее их количества; передние и задние участки могут остаться вне покрытия.",
+      },
+    ],
+  },
+  {
+    id: "device",
+    short: "ЭКС / ICD",
+    title: "Имплантация кардиального устройства",
+    zone: "Подключичный карман, кожный разрез, фасция большой грудной мышцы и путь электродов.",
+    innervation: "Надключичные нервы и передние кожные ветви верхних межрёберных нервов; вариабельный вклад pectoral nerves.",
+    visceral: "Фасциальный блок не заменяет седационную стратегию и контроль боли при венозном доступе и манипуляции электродами.",
+    gap: "Кожа над ключицей, медиальный край кармана и зона туннелирования.",
+    strategies: [
+      {
+        name: "Локальная",
+        blocks: "Инфильтрация хирургом ± селективные поверхностные ветви",
+        reach: "Карман и кожный разрез",
+        safety: "СОСУДЫ · АНТИКОАГУЛЯЦИЯ",
+        note: "Базовая стратегия сопоставляется с конкретным положением кармана и режимом антитромботической терапии.",
+      },
+      {
+        name: "Фасциальная",
+        blocks: "PECS I / pecto-intercostal fascial plane",
+        reach: "Грудная фасция и медиальный край",
+        safety: "LAST · СОСУДЫ",
+        note: "Кандидатное дополнение; надключичная кожная территория может потребовать отдельного контроля.",
+      },
+    ],
+  },
+  {
+    id: "laparotomy",
+    short: "Лапаротомия",
+    title: "Срединная открытая лапаротомия",
+    zone: "Вертикальный разрез по средней линии, влагалище прямой мышцы, брюшина и зона дренажей.",
+    innervation: "Передние кожные ветви торакоабдоминальных нервов; уровни определяются верхним и нижним краем разреза.",
+    visceral: "Блоки брюшной стенки не обеспечивают полноценную висцеральную аналгезию.",
+    gap: "Верхний/нижний край длинного разреза, брюшина, дренажи и стома.",
+    strategies: [
+      {
+        name: "Нейроаксиальная",
+        blocks: "Грудная эпидуральная аналгезия",
+        reach: "Соматический и висцеральный компоненты",
+        safety: "НЕЙРОАКСИАЛЬНАЯ",
+        note: "Кандидат для большой открытой хирургии при отсутствии противопоказаний и в рамках локального ERAS-протокола.",
+      },
+      {
+        name: "Стенка живота",
+        blocks: "Rectus sheath ± subcostal/lateral TAP",
+        reach: "Передняя брюшная стенка",
+        safety: "LAST · БРЮШИНА",
+        note: "Выбор плоскости привязывается к разрезу; висцеральный компонент остаётся отдельной задачей.",
+      },
+    ],
+  },
+  {
+    id: "cholecystectomy",
+    short: "Лап. холецистэктомия",
+    title: "Лапароскопическая холецистэктомия",
+    zone: "Эпигастральный и подреберные порты, умбиликальный порт и зона извлечения препарата.",
+    innervation: "Торакоабдоминальные нервы передней брюшной стенки; каждый порт оценивается отдельно.",
+    visceral: "Пневмоперитонеум, диафрагмальное раздражение и отражённая боль в плече не покрываются обычным TAP.",
+    gap: "Эпигастральный порт, умбиликальная экстракция и отражённая боль в плече.",
+    strategies: [
+      {
+        name: "Процедурная первая линия",
+        blocks: "Инфильтрация портов / intraperitoneal LA по протоколу",
+        reach: "Порт-сайты",
+        safety: "СУММАРНАЯ ДОЗА",
+        note: "PROSPECT ставит локальные техники впереди фасциальных блоков при стандартном лапароскопическом течении.",
+      },
+      {
+        name: "Вторая линия",
+        blocks: "Subcostal TAP или ESP",
+        reach: "Подреберная стенка",
+        safety: "LAST · ПЛЕВРА",
+        note: "Рассматривается в специальных ситуациях; не должно автоматически добавляться к оптимальной базовой аналгезии.",
+      },
+    ],
+  },
+  {
+    id: "colorectal",
+    short: "Колоректальная",
+    title: "Открытая колоректальная операция",
+    zone: "Срединная или поперечная лапаротомия, зона стомы, дренажи и промежностный этап при комбинированном доступе.",
+    innervation: "Торакоабдоминальные нервы соответствующих уровней; промежностная зона имеет отдельную иннервацию.",
+    visceral: "Манипуляции на кишечнике формируют выраженный висцеральный компонент.",
+    gap: "Стома, дренажи, промежностная рана и зоны вне протяжённости выбранной плоскости.",
+    strategies: [
+      {
+        name: "Первая линия для open",
+        blocks: "Грудная эпидуральная аналгезия",
+        reach: "Разрез и висцеральный компонент",
+        safety: "НЕЙРОАКСИАЛЬНАЯ",
+        note: "Актуальный PROSPECT сохраняет эпидуральную аналгезию для открытой колэктомии.",
+      },
+      {
+        name: "Если эпидуральная невозможна",
+        blocks: "Двусторонний TAP / preperitoneal wound infusion",
+        reach: "Соматическая боль стенки",
+        safety: "СУММАРНАЯ ДОЗА",
+        note: "Не сочетать несколько путей местного анестетика без расчёта общей дозы; висцеральная боль требует отдельного плана.",
+      },
+    ],
+  },
+  {
+    id: "caesarean",
+    short: "Кесарево сечение",
+    title: "Плановое кесарево сечение",
+    zone: "Поперечный надлобковый разрез, мышечно-фасциальные слои и матка.",
+    innervation: "TAP/ilioinguinal-iliohypogastric territory для брюшной стенки; висцеральная афферентация матки отдельна.",
+    visceral: "Фасциальный блок не заменяет нейроаксиальную анестезию и интратекальный длительно действующий опиоид.",
+    gap: "Висцеральная боль, медиальная часть разреза и двусторонняя симметрия покрытия.",
+    strategies: [
+      {
+        name: "Стандарт",
+        blocks: "Нейроаксиальная анестезия + длительно действующий нейроаксиальный опиоид",
+        reach: "Хирургическая анестезия и послеоперационная аналгезия",
+        safety: "НЕЙРОАКСИАЛЬНАЯ",
+        note: "Обновлённый PROSPECT 2026 сохраняет эту стратегию основной для планового кесарева сечения.",
+      },
+      {
+        name: "Если нейроаксиальный опиоид не использован",
+        blocks: "TAP / QL / II-IH / transversalis fascia",
+        reach: "Брюшная стенка",
+        safety: "LAST · БРЮШИНА",
+        note: "Фасциальные и нервные блокады рассматриваются как альтернативный компонент послеоперационной аналгезии.",
+      },
+    ],
+  },
+  {
+    id: "hernia",
+    short: "Паховая грыжа",
+    title: "Открытая паховая герниопластика",
+    zone: "Кожа паховой области, апоневроз наружной косой мышцы, паховый канал и зона сетки.",
+    innervation: "Ilioinguinal, iliohypogastric и genital branch genitofemoral nerve с индивидуальной вариабельностью.",
+    visceral: "Манипуляции с грыжевым мешком и брюшиной могут оставлять глубокий компонент боли.",
+    gap: "Лобковый бугорок, мошоночная/лабиальная территория и вариабельная генитальная ветвь.",
+    strategies: [
+      {
+        name: "Селективная",
+        blocks: "Ilioinguinal–iliohypogastric block + инфильтрация",
+        reach: "Паховый разрез",
+        safety: "СОСУДЫ · БРЮШИНА",
+        note: "УЗ-навигация помогает сопоставить нервы и хирургическую зону, но не устраняет анатомическую вариабельность.",
+      },
+      {
+        name: "Проксимальная плоскость",
+        blocks: "Transversalis fascia plane / posterior TAP",
+        reach: "T12–L1 территория",
+        safety: "LAST · РЕТРОПЕРИТОНЕУМ",
+        note: "TFP ориентирован на более проксимальное покрытие II/IH; возможное распространение оценивается отдельно.",
+      },
+    ],
+  },
+  {
+    id: "flank",
+    short: "Боковой доступ",
+    title: "Фланковый и ретроперитонеальный доступ",
+    zone: "Подреберный или фланковый разрез через боковую брюшную стенку, иногда с пересечением нескольких мышечных слоёв.",
+    innervation: "Нижние торакоабдоминальные нервы, subcostal nerve и верхние ветви поясничного сплетения.",
+    visceral: "Почка, мочеточник и ретроперитонеальные структуры формируют глубокий висцеральный компонент.",
+    gap: "Задний край разреза, подреберная дуга, паховая территория и дренаж.",
+    strategies: [
+      {
+        name: "Боковая стенка",
+        blocks: "Subcostal TAP / QL",
+        reach: "Подреберная и фланковая стенка",
+        safety: "ПОЧКА · БРЮШИНА",
+        note: "Точка инъекции и вариант QL выбираются по траектории разреза, глубине и антитромботическому профилю.",
+      },
+      {
+        name: "Параспинальная",
+        blocks: "ESP / paravertebral block",
+        reach: "Заднебоковые сегменты",
+        safety: "ГЛУБОКАЯ ТЕХНИКА",
+        note: "Кандидат при длинном заднебоковом разрезе; висцеральное покрытие не считается гарантированным.",
+      },
+    ],
+  },
+];
+
+const trunkBlockZones: Array<{
+  id: TrunkBlockId;
+  code: string;
+  title: string;
+  standardName: string;
+  projection: TrunkProjection;
+  group: "CHEST" | "ABDOMEN" | "POSTERIOR";
+  target: string;
+  expected: string;
+  caution: string;
+  layers: string[];
+  targetAfter: number;
+}> = [
+  {
+    id: "pec1",
+    code: "PEC I",
+    title: "Interpectoral plane",
+    standardName: "Interpectoral plane block · традиционно PECS I",
+    projection: "front",
+    group: "CHEST",
+    target: "Плоскость между большой и малой грудными мышцами.",
+    expected: "Медиальный и латеральный грудные нервы; мышечно-фасциальный компонент передней грудной стенки.",
+    caution: "Pectoral branch thoracoacromial artery, суммарная доза LA.",
+    layers: ["Кожа", "Pectoralis major", "TARGET", "Pectoralis minor", "Рёбра / плевра"],
+    targetAfter: 2,
+  },
+  {
+    id: "pec2",
+    code: "PEC II",
+    title: "Pectoserratus plane",
+    standardName: "Pectoserratus plane block · компонент PECS II",
+    projection: "front",
+    group: "CHEST",
+    target: "Плоскость между малой грудной и передней зубчатой мышцами.",
+    expected: "Переднебоковая грудная стенка и аксиллярный компонент; PECS II обычно включает interpectoral injection.",
+    caution: "Thoracoacromial/lateral thoracic vessels, плевра глубже serratus.",
+    layers: ["Кожа", "Pectoralis major", "Pectoralis minor", "TARGET", "Serratus anterior", "Рёбра / плевра"],
+    targetAfter: 3,
+  },
+  {
+    id: "deep-serratus",
+    code: "DEEP SAP",
+    title: "Deep serratus anterior plane",
+    standardName: "Deep serratus anterior plane block",
+    projection: "side",
+    group: "CHEST",
+    target: "Плоскость глубже serratus anterior, поверхностнее рёбер и наружных межрёберных мышц.",
+    expected: "Латеральные кожные ветви межрёберных нервов и латеральная грудная стенка.",
+    caution: "Плевра, межрёберные сосуды, соответствие уровням разреза или переломов.",
+    layers: ["Кожа", "Latissimus / subcutaneous", "Serratus anterior", "TARGET", "Рёбра / intercostal", "Плевра"],
+    targetAfter: 3,
+  },
+  {
+    id: "spip",
+    code: "SPIP",
+    title: "Superficial parasternal plane",
+    standardName: "Superficial Parasternal Intercostal Plane block",
+    projection: "front",
+    group: "CHEST",
+    target: "Плоскость поверхностнее наружных межрёберных мышц, глубже pectoralis major, парастернально.",
+    expected: "Передние кожные ветви межрёберных нервов и медиальная передняя грудная стенка.",
+    caution: "Двусторонняя суммарная доза; spread вариабелен, не распространяется автоматически в rectus sheath.",
+    layers: ["Кожа", "Pectoralis major", "TARGET", "External intercostal", "Internal intercostal", "Плевра"],
+    targetAfter: 2,
+  },
+  {
+    id: "dpip",
+    code: "DPIP",
+    title: "Deep parasternal plane",
+    standardName: "Deep Parasternal Intercostal Plane block",
+    projection: "front",
+    group: "CHEST",
+    target: "Глубже internal intercostal muscle и поверхностнее transversus thoracis.",
+    expected: "Парастернальное распространение вдоль нескольких межрёберных промежутков.",
+    caution: "ADVANCED: внутренняя грудная артерия и плевра находятся в непосредственной близости.",
+    layers: ["Кожа", "Pectoralis major", "Intercostal muscles", "TARGET", "Transversus thoracis", "Плевра / перикард"],
+    targetAfter: 3,
+  },
+  {
+    id: "tap-classic",
+    code: "TAP CLASSIC",
+    title: "Lateral transversus abdominis plane",
+    standardName: "Lateral TAP block · классический TAP",
+    projection: "front",
+    group: "ABDOMEN",
+    target: "Плоскость между internal oblique и transversus abdominis по средней подмышечной линии.",
+    expected: "Переднебоковая брюшная стенка, преимущественно ниже пупка; фактическое распространение вариабельно.",
+    caution: "Брюшина и кишечник глубже TA, глубокая огибающая подвздошная артерия каудально.",
+    layers: ["Кожа", "External oblique", "Internal oblique", "TARGET", "Transversus abdominis", "Брюшина"],
+    targetAfter: 3,
+  },
+  {
+    id: "tap-subcostal",
+    code: "TAP SUBCOSTAL",
+    title: "Subcostal TAP",
+    standardName: "Subcostal transversus abdominis plane block",
+    projection: "front",
+    group: "ABDOMEN",
+    target: "Плоскость под rectus abdominis между transversus abdominis и задней поверхностью rectus, вдоль подреберья.",
+    expected: "Верхняя передняя брюшная стенка и супраумбиликальные порт-сайты.",
+    caution: "Перитонеальная полость и верхние эпигастральные сосуды; не покрывает отражённую плечевую боль.",
+    layers: ["Кожа", "Rectus abdominis", "TARGET", "Transversus abdominis", "Transversalis fascia", "Брюшина"],
+    targetAfter: 2,
+  },
+  {
+    id: "rectus-sheath",
+    code: "RECTUS",
+    title: "Rectus sheath",
+    standardName: "Rectus sheath block",
+    projection: "front",
+    group: "ABDOMEN",
+    target: "Глубже rectus abdominis, поверхностнее posterior rectus sheath.",
+    expected: "Терминальные передние ветви для срединной передней брюшной стенки.",
+    caution: "Верхние/нижние эпигастральные сосуды; ниже arcuate line задняя стенка влагалища отсутствует.",
+    layers: ["Кожа", "Anterior rectus sheath", "Rectus abdominis", "TARGET", "Posterior sheath", "Брюшина"],
+    targetAfter: 3,
+  },
+  {
+    id: "ql1",
+    code: "QLB-1",
+    title: "Lateral quadratus lumborum",
+    standardName: "Lateral QL block · прежнее название QLB-1",
+    projection: "back",
+    group: "POSTERIOR",
+    target: "Латеральный край QL у места перехода апоневроза transversus abdominis.",
+    expected: "Латеральная и нижняя брюшная стенка; распространение рассматривается как вероятностное.",
+    caution: "Почка, брюшина и суммарная доза при двусторонней технике.",
+    layers: ["Кожа", "Abdominal wall / latissimus", "TA aponeurosis", "TARGET", "Quadratus lumborum", "Почка / брюшина"],
+    targetAfter: 3,
+  },
+  {
+    id: "ql2",
+    code: "QLB-2",
+    title: "Posterior quadratus lumborum",
+    standardName: "Posterior QL block · прежнее название QLB-2",
+    projection: "back",
+    group: "POSTERIOR",
+    target: "Позади QL, в области middle layer thoracolumbar fascia / lumbar interfascial triangle.",
+    expected: "Заднебоковая брюшная стенка; краниокаудальное распространение вариабельно.",
+    caution: "Глубина, некомпрессируемость, почка и антитромботическая терапия.",
+    layers: ["Кожа", "Latissimus / erector spinae", "TARGET", "Quadratus lumborum", "Anterior TLF", "Psoas / kidney"],
+    targetAfter: 2,
+  },
+  {
+    id: "ql3",
+    code: "QLB-3",
+    title: "Anterior quadratus lumborum",
+    standardName: "Anterior QL block · transmuscular · прежнее QLB-3",
+    projection: "back",
+    group: "POSTERIOR",
+    target: "Между QL и psoas major, спереди от QL.",
+    expected: "Глубокое распространение вдоль anterior thoracolumbar fascia; клиническое покрытие вариабельно.",
+    caution: "ADVANCED: глубокая некомпрессируемая зона, почка, сосуды и lumbar plexus рядом.",
+    layers: ["Кожа", "Erector spinae", "Quadratus lumborum", "TARGET", "Psoas major", "Lumbar plexus / kidney"],
+    targetAfter: 3,
+  },
+];
+
 function BodyAtlasHero() {
   const [zoneId, setZoneId] = useState<AtlasZoneId>("upper");
   const zone = atlasZones.find((item) => item.id === zoneId) ?? atlasZones[0];
@@ -423,19 +939,33 @@ function BodyAtlasHero() {
       </header>
 
       <div className="atlas-stage">
-        <div className="atlas-media" data-zone={zone.id} aria-hidden="true">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster={`${assetBasePath}/media/body-atlas/poster.webp`}
-          >
-            <source src={`${assetBasePath}/media/body-atlas/body-atlas-loop.mp4`} type="video/mp4" />
-          </video>
+        <div className="atlas-media" data-zone={zone.id} data-visual={zone.visual} aria-hidden="true">
+          <div className={`atlas-visual atlas-visual--front ${zone.visual === "front" ? "is-active" : ""}`}>
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={`${assetBasePath}/media/body-atlas/poster.webp`}
+            >
+              <source src={`${assetBasePath}/media/body-atlas/body-atlas-loop.mp4`} type="video/mp4" />
+            </video>
+            <div
+              className="atlas-poster"
+              style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/poster.webp")` }}
+            />
+          </div>
           <div
-            className="atlas-poster"
-            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/poster.webp")` }}
+            className={`atlas-visual atlas-visual--posterior ${zone.visual === "posterior" ? "is-active" : ""}`}
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/posterior-atlas.webp")` }}
+          />
+          <div
+            className={`atlas-visual atlas-visual--shoulder-fracture ${zone.visual === "shoulder-fracture" ? "is-active" : ""}`}
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/shoulder-fracture.webp")` }}
+          />
+          <div
+            className={`atlas-visual atlas-visual--hip-arthroplasty ${zone.visual === "hip-arthroplasty" ? "is-active" : ""}`}
+            style={{ backgroundImage: `url("${assetBasePath}/media/body-atlas/hip-arthroplasty.webp")` }}
           />
         </div>
         <div className="atlas-vignette" />
@@ -464,6 +994,7 @@ function BodyAtlasHero() {
           </div>
           <h2>{zone.title}</h2>
           <p>{zone.description}</p>
+          <span className="atlas-visual-label">{zone.visualLabel}</span>
           {zone.href ? (
             <a href={zone.href}>Открыть раздел <span>↓</span></a>
           ) : (
@@ -493,6 +1024,8 @@ function BodyAtlasHero() {
           <i />
           <span>CAMERA TARGET</span>
           <b>{zone.focus}</b>
+          <span>VIEW</span>
+          <b>{zone.visual === "posterior" ? "POSTERIOR" : "CLINICAL FOCUS"}</b>
         </div>
       </div>
     </section>
@@ -1091,6 +1624,378 @@ function UpperLimbModule() {
   );
 }
 
+function TrunkAnatomyMap() {
+  const [activeId, setActiveId] = useState<TrunkBlockId>("pec1");
+  const active =
+    trunkBlockZones.find((item) => item.id === activeId) ?? trunkBlockZones[0];
+  const projection = active.projection;
+
+  const selectProjection = (next: TrunkProjection) => {
+    const defaults: Record<TrunkProjection, TrunkBlockId> = {
+      front: "pec1",
+      side: "deep-serratus",
+      back: "ql1",
+    };
+    setActiveId(defaults[next]);
+  };
+
+  const svgZoneProps = (id: TrunkBlockId) => ({
+    className: `trunk-zone trunk-zone--${id} ${activeId === id ? "is-active" : ""}`,
+    role: "button" as const,
+    tabIndex: 0,
+    "aria-label": trunkBlockZones.find((item) => item.id === id)?.standardName,
+    onClick: () => setActiveId(id),
+    onKeyDown: (event: React.KeyboardEvent<SVGGElement>) => {
+      if (event.key === "Enter" || event.key === " ") setActiveId(id);
+    },
+  });
+
+  return (
+    <section className="trunk-atlas" id="trunk-atlas" aria-labelledby="trunk-atlas-title">
+      <header className="trunk-atlas-heading">
+        <div>
+          <span>06 / INTERACTIVE FASCIAL ATLAS</span>
+          <h3 id="trunk-atlas-title">Карта плоскостей.</h3>
+        </div>
+        <p>
+          Выберите блок на карте или в списке. Схема показывает положение
+          целевой плоскости, а не траекторию иглы или гарантированное распространение.
+        </p>
+      </header>
+
+      <div className="projection-switch" role="group" aria-label="Проекция модели">
+        {([
+          ["front", "Передняя"],
+          ["side", "Боковая"],
+          ["back", "Задняя"],
+        ] as Array<[TrunkProjection, string]>).map(([id, label]) => (
+          <button
+            type="button"
+            key={id}
+            className={projection === id ? "is-active" : ""}
+            onClick={() => selectProjection(id)}
+            aria-pressed={projection === id}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="trunk-atlas-shell">
+        <div className="trunk-atlas-stage">
+          <div className="atlas-orientation" aria-hidden="true">
+            <span>{projection === "front" ? "ANTERIOR" : projection === "side" ? "LATERAL" : "POSTERIOR"}</span>
+            <i />
+            <span>MODEL / TRUNK-01</span>
+          </div>
+
+          <svg viewBox="0 0 720 760" role="img" aria-label={`Анатомическая карта: ${active.standardName}`}>
+            <defs>
+              <linearGradient id="torsoFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#15272b" />
+                <stop offset="1" stopColor="#091114" />
+              </linearGradient>
+              <filter id="zoneGlow">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+
+            {projection === "front" && (
+              <g className="torso-drawing torso-drawing--front">
+                <path className="body-silhouette" d="M296 66 C273 91 272 126 260 151 C224 169 184 185 160 225 C139 260 151 322 167 359 C177 383 181 420 175 466 L151 694 C198 724 253 738 360 738 C467 738 522 724 569 694 L545 466 C539 420 543 383 553 359 C569 322 581 260 560 225 C536 185 496 169 460 151 C448 126 447 91 424 66 C390 42 330 42 296 66 Z" />
+                <path className="anatomy-line" d="M360 92 L360 676" />
+                <path className="sternum" d="M346 158 L374 158 L382 348 L338 348 Z" />
+                {[190, 225, 260, 295, 330].map((y) => (
+                  <path key={y} className="rib-line" d={`M352 ${y} C300 ${y - 24} 244 ${y - 10} 205 ${y + 22} M368 ${y} C420 ${y - 24} 476 ${y - 10} 515 ${y + 22}`} />
+                ))}
+                <path className="muscle-line" d="M214 194 C282 147 334 170 348 234 C318 283 254 305 195 270" />
+                <path className="muscle-line" d="M506 194 C438 147 386 170 372 234 C402 283 466 305 525 270" />
+                <path className="muscle-line" d="M304 373 L282 666 M416 373 L438 666 M360 374 L360 676" />
+                <path className="muscle-line" d="M280 470 L440 470 M267 550 L453 550 M258 628 L462 628" />
+
+                <g {...svgZoneProps("pec1")}>
+                  <path d="M382 190 C416 169 457 176 479 208 C464 244 428 265 389 257 C374 235 373 211 382 190 Z" />
+                  <text x="425" y="220">PEC I</text>
+                </g>
+                <g {...svgZoneProps("pec2")}>
+                  <path d="M452 236 C497 235 530 257 538 294 L517 358 C476 347 445 320 426 286 Z" />
+                  <text x="486" y="291">PEC II</text>
+                </g>
+                <g {...svgZoneProps("spip")}>
+                  <rect x="306" y="182" width="30" height="178" rx="15" />
+                  <text x="292" y="277" transform="rotate(-90 292 277)">SPIP</text>
+                </g>
+                <g {...svgZoneProps("dpip")}>
+                  <rect x="344" y="182" width="24" height="178" rx="12" />
+                  <text x="362" y="277" transform="rotate(-90 362 277)">DPIP</text>
+                </g>
+                <g {...svgZoneProps("tap-subcostal")}>
+                  <path d="M238 377 C293 350 427 350 482 377 L461 426 C407 404 313 404 259 426 Z" />
+                  <text x="360" y="393">SUBCOSTAL TAP</text>
+                </g>
+                <g {...svgZoneProps("rectus-sheath")}>
+                  <path d="M299 417 L351 399 L351 666 L286 646 Z M369 399 L421 417 L434 646 L369 666 Z" />
+                  <text x="360" y="528">RECTUS</text>
+                </g>
+                <g {...svgZoneProps("tap-classic")}>
+                  <path d="M190 428 C221 405 258 410 284 438 L272 627 C237 648 201 636 178 610 Z M530 428 C499 405 462 410 436 438 L448 627 C483 648 519 636 542 610 Z" />
+                  <text x="228" y="535">TAP</text>
+                  <text x="492" y="535">TAP</text>
+                </g>
+              </g>
+            )}
+
+            {projection === "side" && (
+              <g className="torso-drawing torso-drawing--side">
+                <path className="body-silhouette" d="M328 55 C288 87 286 133 301 166 C246 190 213 239 217 310 C220 365 247 403 238 475 L214 693 C266 727 351 742 430 724 C478 713 506 689 515 653 L493 466 C486 408 516 350 509 286 C503 222 465 184 425 165 C433 121 413 72 377 53 C359 44 344 45 328 55 Z" />
+                {[205, 243, 281, 319, 357].map((y) => (
+                  <path key={y} className="rib-line" d={`M294 ${y} C365 ${y - 28} 444 ${y - 8} 476 ${y + 32}`} />
+                ))}
+                <path className="muscle-line" d="M265 213 C310 189 361 196 392 231 C369 257 340 283 300 315" />
+                <path className="muscle-line" d="M272 300 L457 386 M260 332 L444 416 M254 365 L426 447" />
+                <g {...svgZoneProps("deep-serratus")}>
+                  <path d="M260 281 C309 262 387 282 451 342 L425 435 C361 393 303 365 248 352 Z" />
+                  <text x="357" y="351">DEEP SERRATUS</text>
+                </g>
+              </g>
+            )}
+
+            {projection === "back" && (
+              <g className="torso-drawing torso-drawing--back">
+                <path className="body-silhouette" d="M296 66 C273 91 272 126 260 151 C224 169 184 185 160 225 C139 260 151 322 167 359 C177 383 181 420 175 466 L151 694 C198 724 253 738 360 738 C467 738 522 724 569 694 L545 466 C539 420 543 383 553 359 C569 322 581 260 560 225 C536 185 496 169 460 151 C448 126 447 91 424 66 C390 42 330 42 296 66 Z" />
+                <path className="spine-line" d="M360 105 L360 675" />
+                {[178, 213, 248, 283, 318, 353].map((y) => (
+                  <path key={y} className="rib-line" d={`M351 ${y} C300 ${y - 22} 246 ${y - 8} 207 ${y + 24} M369 ${y} C420 ${y - 22} 474 ${y - 8} 513 ${y + 24}`} />
+                ))}
+                <path className="ql-muscle" d="M281 426 C305 396 338 404 348 435 L337 627 C315 659 283 646 269 612 Z M439 426 C415 396 382 404 372 435 L383 627 C405 659 437 646 451 612 Z" />
+                <path className="pelvis-line" d="M224 626 C279 599 321 616 360 649 C399 616 441 599 496 626" />
+                <g {...svgZoneProps("ql1")}>
+                  <path d="M252 438 C270 420 288 417 302 430 L289 606 C271 617 251 606 241 585 Z M468 438 C450 420 432 417 418 430 L431 606 C449 617 469 606 479 585 Z" />
+                  <text x="263" y="520">QL1</text>
+                  <text x="457" y="520">QL1</text>
+                </g>
+                <g {...svgZoneProps("ql2")}>
+                  <path d="M291 415 C317 397 338 410 346 442 L336 620 C320 643 299 638 286 612 Z M429 415 C403 397 382 410 374 442 L384 620 C400 643 421 638 434 612 Z" />
+                  <text x="314" y="554">QL2</text>
+                  <text x="406" y="554">QL2</text>
+                </g>
+                <g {...svgZoneProps("ql3")}>
+                  <path d="M319 433 C334 420 347 433 350 461 L343 600 C334 620 322 613 316 590 Z M401 433 C386 420 373 433 370 461 L377 600 C386 620 398 613 404 590 Z" />
+                  <text x="336" y="490">QL3</text>
+                  <text x="384" y="490">QL3</text>
+                </g>
+              </g>
+            )}
+          </svg>
+
+          <div className="active-zone-tag">
+            <span>{active.code}</span>
+            <b>{active.title}</b>
+          </div>
+        </div>
+
+        <aside className="trunk-atlas-detail" aria-live="polite">
+          <span className="micro-label">{active.group} / ACTIVE PLANE</span>
+          <h4>{active.standardName}</h4>
+          <dl>
+            <div><dt>Целевая плоскость</dt><dd>{active.target}</dd></div>
+            <div><dt>Ожидаемая территория</dt><dd>{active.expected}</dd></div>
+            <div className="detail-caution"><dt>Критические структуры</dt><dd>{active.caution}</dd></div>
+          </dl>
+          <div className="layer-stack" aria-label="Слои от поверхностного к глубокому">
+            <span>ПОВЕРХНОСТНО</span>
+            {active.layers.map((layer, index) => (
+              <i
+                key={`${active.id}-${layer}-${index}`}
+                className={index === active.targetAfter ? "is-target" : ""}
+              >
+                {layer === "TARGET" ? "ИНЪЕКЦИОННАЯ ПЛОСКОСТЬ" : layer}
+              </i>
+            ))}
+            <span>ГЛУБОКО</span>
+          </div>
+        </aside>
+      </div>
+
+      <nav className="trunk-block-index" aria-label="Выбор фасциальной плоскости">
+        {trunkBlockZones.map((item, index) => (
+          <button
+            type="button"
+            key={item.id}
+            className={active.id === item.id ? "is-active" : ""}
+            onClick={() => setActiveId(item.id)}
+            aria-pressed={active.id === item.id}
+          >
+            <i>{String(index + 1).padStart(2, "0")}</i>
+            <span>{item.code}</span>
+            <b>{item.title}</b>
+          </button>
+        ))}
+      </nav>
+    </section>
+  );
+}
+
+function TrunkWallModule() {
+  const [operationId, setOperationId] = useState<TrunkOperationId>("thoracotomy");
+  const [strategyIndex, setStrategyIndex] = useState(0);
+  const operation =
+    trunkOperations.find((item) => item.id === operationId) ?? trunkOperations[0];
+  const strategy = operation.strategies[strategyIndex] ?? operation.strategies[0];
+
+  const chooseOperation = (id: TrunkOperationId) => {
+    setOperationId(id);
+    setStrategyIndex(0);
+  };
+
+  return (
+    <section className="upper-module trunk-module" id="trunk-wall">
+      <div className="upper-heading">
+        <p className="section-kicker"><span>05</span> TRUNK WALL / ALPHA</p>
+        <h2>Грудная и<br />брюшная стенка.</h2>
+        <div className="upper-intro">
+          <p>
+            Навигатор связывает форму разреза, уровни иннервации и фасциальную
+            плоскость — и отдельно показывает висцеральный компонент боли.
+          </p>
+          <span>12 СЦЕНАРИЕВ · ASRA/ESRA NOMENCLATURE · PROSPECT</span>
+        </div>
+      </div>
+
+      <div className="clinical-shell">
+        <nav className="operation-rail" aria-label="Операции на грудной и брюшной стенке">
+          <span className="rail-title">01 / ОПЕРАЦИЯ</span>
+          {trunkOperations.map((item, index) => (
+            <button
+              type="button"
+              key={item.id}
+              className={operation.id === item.id ? "is-active" : ""}
+              onClick={() => chooseOperation(item.id)}
+              aria-pressed={operation.id === item.id}
+            >
+              <i>{String(index + 1).padStart(2, "0")}</i>
+              <span>{item.short}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="clinical-content">
+          <div className="case-overview">
+            <div>
+              <span className="micro-label">ВЫБРАННЫЙ КЕЙС</span>
+              <h3>{operation.title}</h3>
+            </div>
+            <span className="prototype-chip">SOMATIC ≠ VISCERAL</span>
+          </div>
+
+          <div className="clinical-map-grid clinical-map-grid--trunk">
+            <article>
+              <span>ХИРУРГИЧЕСКАЯ ЗОНА</span>
+              <p>{operation.zone}</p>
+            </article>
+            <article>
+              <span>ИННЕРВАЦИЯ СТЕНКИ</span>
+              <p>{operation.innervation}</p>
+            </article>
+            <article className="visceral-card">
+              <span>ВИСЦЕРАЛЬНЫЙ КОМПОНЕНТ</span>
+              <p>{operation.visceral}</p>
+            </article>
+            <article className="gap-card">
+              <span>ОБЯЗАТЕЛЬНО ПРОВЕРИТЬ</span>
+              <p>{operation.gap}</p>
+            </article>
+          </div>
+
+          <div className="strategy-header">
+            <span className="micro-label">02 / СРАВНЕНИЕ СТРАТЕГИЙ</span>
+            <p>Фасциальная плоскость выбирается по разрезу, а не только по названию операции.</p>
+          </div>
+
+          <div className="upper-strategies">
+            {operation.strategies.map((item, index) => (
+              <button
+                type="button"
+                key={`${operation.id}-${item.name}`}
+                className={strategyIndex === index ? "is-active" : ""}
+                onClick={() => setStrategyIndex(index)}
+                aria-pressed={strategyIndex === index}
+              >
+                <span className="strategy-topline">
+                  <i>{String(index + 1).padStart(2, "0")}</i>
+                  <span className="risk-chip risk-chip--warning">{item.safety}</span>
+                </span>
+                <strong>{item.name}</strong>
+                <b>{item.blocks}</b>
+                <span className="motor-line">ОЖИДАЕМАЯ ЗОНА / {item.reach}</span>
+                <p>{item.note}</p>
+              </button>
+            ))}
+          </div>
+
+          <div className="selection-summary" aria-live="polite">
+            <span>ТЕКУЩИЙ ФОКУС</span>
+            <b>{strategy.blocks}</b>
+            <div>
+              <span>{strategy.reach}</span>
+              <span className="risk-chip risk-chip--warning">{strategy.safety}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <TrunkAnatomyMap />
+
+      <div className="trunk-principles">
+        <article>
+          <span>03 / SOMATIC MAP</span>
+          <h3>Разрез сначала.</h3>
+          <p>
+            Верхний и нижний край, латеральность, дренажи, стома и донорская зона
+            формируют карту покрытия до выбора названия блока.
+          </p>
+        </article>
+        <article>
+          <span>04 / VISCERAL CHECK</span>
+          <h3>Стенка — не вся операция.</h3>
+          <p>
+            TAP, rectus sheath, PECS и serratus plane в первую очередь адресуют
+            соматическую боль стенки. Висцеральный компонент отображается отдельно.
+          </p>
+        </article>
+        <article>
+          <span>05 / SAFETY</span>
+          <h3>Суммарная доза.</h3>
+          <p>
+            Двусторонние и многоплоскостные техники, инфильтрация хирургом и другие
+            пути местного анестетика должны суммироваться в калькуляторе LAST.
+          </p>
+        </article>
+      </div>
+
+      <div className="module-sources">
+        <span>ОПОРНЫЕ ИСТОЧНИКИ</span>
+        <a href="https://asra.com/news-publications/asra-updates/blog-landing/guidelines/2021/02/01/standardizing-nomenclature-in-regional-anesthesia"
+          target="_blank" rel="noreferrer">ASRA–ESRA nomenclature consensus ↗</a>
+        <a href="https://esraeurope.org/prospect/"
+          target="_blank" rel="noreferrer">PROSPECT procedure-specific recommendations ↗</a>
+        <a href="https://www.bjanaesthesia.org.uk/article/S0007-0912(23)00448-8/fulltext"
+          target="_blank" rel="noreferrer">BJA: SPIP versus DPIP anatomy ↗</a>
+      </div>
+
+      <div className="module-disclaimer">
+        <b>ALPHA / EDUCATIONAL DECISION SUPPORT</b>
+        <p>
+          Это карта для клинического обсуждения, а не автоматическое назначение.
+          Дерматомы, распространение раствора, риски и рекомендации требуют
+          экспертной верификации и сопоставления с локальным протоколом.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [strategy, setStrategy] = useState<Strategy>("balanced");
   const [query, setQuery] = useState("Тотальное эндопротезирование коленного сустава");
@@ -1180,6 +2085,7 @@ export default function Home() {
       </section>
 
       <UpperLimbModule />
+      <TrunkWallModule />
 
       <section className="evidence">
         <div>
@@ -1202,7 +2108,7 @@ export default function Home() {
         <p>
           Демонстрационный прототип для обсуждения логики продукта. Не является клинической рекомендацией и требует экспертной валидации перед применением.
         </p>
-        <span>VERSION 0.3 / 2026</span>
+        <span>VERSION 0.6 / 2026</span>
       </footer>
     </main>
   );
