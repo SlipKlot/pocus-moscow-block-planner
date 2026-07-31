@@ -202,6 +202,25 @@ const interscaleneImages: BlockMediaImage[] = [
   },
 ];
 
+const supraclavicularImages: BlockMediaImage[] = [
+  {
+    src: `${assetBasePath}/media/supraclavicular/SUPRACLAVICULAR_brachial_plexus_clean.png`,
+    alt: "Схема плечевого сплетения на надключичном уровне",
+  },
+  {
+    src: `${assetBasePath}/media/supraclavicular/SUPRACLAVICULAR_anatomy_clean.png`,
+    alt: "Поперечная анатомия надключичной области",
+  },
+  {
+    src: `${assetBasePath}/media/supraclavicular/SUPRACLAVICULAR_distribution_clean.png`,
+    alt: "Ожидаемая территория надключичной блокады",
+  },
+  {
+    src: `${assetBasePath}/media/supraclavicular/SUPRACLAVICULAR_probe_ultrasound_clean.png`,
+    alt: "Положение датчика и ультразвуковая анатомия надключичной области",
+  },
+];
+
 const strategies = {
   balanced: {
     label: "Сбалансированная",
@@ -1704,6 +1723,75 @@ function UpperLimbModule() {
             rel="noreferrer"
           >
             Eisenberg, Gaertner, Clavert · Brachial Plexus Blocks · 2023 ↗
+          </a>
+        </div>
+      </section>
+
+      <section className="upper-block-atlas" aria-labelledby="supraclavicular-title">
+        <header className="upper-block-atlas__heading">
+          <div>
+            <span>BLOCK ATLAS / 02</span>
+            <h3 id="supraclavicular-title">SUPRACLAVICULAR</h3>
+            <p>Надключичная блокада плечевого сплетения</p>
+          </div>
+          <b>ARM · ELBOW · FOREARM</b>
+        </header>
+
+        <div className="upper-block-atlas__grid">
+          <BlockMediaGallery
+            blockLabel="Надключичная блокада"
+            videoSrc={`${assetBasePath}/media/supraclavicular/SUPRACLAVICULAR_Higgsfield_transition.mp4`}
+            posterSrc={`${assetBasePath}/media/supraclavicular/SUPRACLAVICULAR_probe_ultrasound_clean.png`}
+            images={supraclavicularImages}
+            note="Нажмите на изображение, чтобы открыть его полностью. Анимация связывает схему плечевого сплетения, поперечную анатомию, ожидаемую зону блокады и реальную УЗ-картину; траектория иглы и распространение раствора не моделируются."
+          />
+
+          <div className="upper-block-atlas__details">
+            <dl>
+              <div>
+                <dt>Основные показания</dt>
+                <dd>Операции на плече дистальнее проксимального отдела, локтевом суставе и предплечье; особенно удобна при травме, когда перемещение конечности нежелательно.</dd>
+              </div>
+              <div>
+                <dt>УЗ-ориентиры</dt>
+                <dd>Плечевое сплетение краниальнее и латеральнее подключичной артерии, первое ребро и плевра; линейный датчик располагают поперечно, параллельно и непосредственно над ключицей.</dd>
+              </div>
+              <div>
+                <dt>Рабочая стратегия</dt>
+                <dd>Латеральный доступ in-plane с непрерывной визуализацией кончика иглы. Первое ребро должно находиться глубже цели и служить костным барьером перед плеврой.</dd>
+              </div>
+              <div>
+                <dt>Ограничение покрытия</dt>
+                <dd>Компоненты C8-T1 могут быть анатомически изолированы и блокироваться неполно; для операций на кисти покрытие локтевой территории нельзя считать гарантированным.</dd>
+              </div>
+            </dl>
+
+            <div className="upper-block-atlas__warning">
+              <span>КРИТИЧЕСКАЯ ПРОВЕРКА</span>
+              <p>
+                Обязательно включите Doppler и найдите подключичные сосуды, поперечную
+                артерию шеи, дорсальную артерию лопатки и другие сосудистые ветви.
+                До продвижения иглы визуализируйте первое ребро, плевру и лёгкое;
+                сохраняйте кончик иглы в кадре на всей траектории.
+              </p>
+            </div>
+
+            <p className="upper-block-atlas__alternative">
+              <b>Ключевые риски:</b> пневмоторакс, сосудистая пункция и LAST,
+              внутриневральная инъекция, а также парез диафрагмы. УЗ-навигация
+              снижает риск, но не устраняет его полностью.
+            </p>
+          </div>
+        </div>
+
+        <div className="upper-block-atlas__source">
+          <span>КЛИНИЧЕСКАЯ ОСНОВА</span>
+          <a
+            href="https://doi.org/10.1007/978-3-031-08804-9_5"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Eisenberg, Gaertner, Clavert · Supraclavicular Block · 2023 ↗
           </a>
         </div>
       </section>
