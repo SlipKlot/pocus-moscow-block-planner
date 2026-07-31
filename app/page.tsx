@@ -163,6 +163,45 @@ const chapters = [
 const chapterStops = [0, 0.15, 0.32, 0.5, 0.68, 0.82];
 const assetBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+type BlockMediaImage = {
+  src: string;
+  alt: string;
+};
+
+const pec1Images: BlockMediaImage[] = [
+  {
+    src: `${assetBasePath}/media/pec1/PEC1_probe_position_clean.png`,
+    alt: "Положение ультразвукового датчика для блока PEC I",
+  },
+  {
+    src: `${assetBasePath}/media/pec1/PEC1_anatomy_clean.png`,
+    alt: "Анатомия межпекторальной плоскости PEC I",
+  },
+  {
+    src: `${assetBasePath}/media/pec1/PEC1_ultrasound_clean.png`,
+    alt: "Ультразвуковое изображение для блока PEC I",
+  },
+];
+
+const interscaleneImages: BlockMediaImage[] = [
+  {
+    src: `${assetBasePath}/media/interscalene/INTERSCALENE_probe_position_clean.png`,
+    alt: "Положение линейного датчика при межлестничной блокаде",
+  },
+  {
+    src: `${assetBasePath}/media/interscalene/INTERSCALENE_ultrasound_clean.png`,
+    alt: "Положение датчика и соответствующая ультразвуковая анатомия межлестничной области",
+  },
+  {
+    src: `${assetBasePath}/media/interscalene/INTERSCALENE_anatomy_clean.png`,
+    alt: "Поперечная анатомия межлестничного промежутка",
+  },
+  {
+    src: `${assetBasePath}/media/interscalene/INTERSCALENE_distribution_clean.png`,
+    alt: "Ожидаемая территория межлестничной блокады",
+  },
+];
+
 const strategies = {
   balanced: {
     label: "Сбалансированная",
@@ -1341,6 +1380,133 @@ function RiskChip({ risk }: { risk: DiaphragmRisk }) {
   return <span className={`risk-chip risk-chip--${tone}`}>{risk}</span>;
 }
 
+function BlockMediaGallery({
+  blockLabel,
+  videoSrc,
+  posterSrc,
+  images,
+  note,
+}: {
+  blockLabel: string;
+  videoSrc: string;
+  posterSrc: string;
+  images: BlockMediaImage[];
+  note: string;
+}) {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLightboxIndex(null);
+      if (event.key === "ArrowLeft") {
+        setLightboxIndex((current) =>
+          current === null ? null : (current + images.length - 1) % images.length,
+        );
+      }
+      if (event.key === "ArrowRight") {
+        setLightboxIndex((current) =>
+          current === null ? null : (current + 1) % images.length,
+        );
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [images.length, lightboxIndex]);
+
+  return (
+    <>
+      <div className="pec1-media">
+        <video
+          className="pec1-media__video"
+          controls
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={posterSrc}
+          aria-label={`${blockLabel}: учебная анимация`}
+        >
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+        <div className="pec1-media__stills" aria-label={`${blockLabel}: опорные изображения`}>
+          {images.map((image, index) => (
+            <button
+              type="button"
+              key={image.src}
+              onClick={() => setLightboxIndex(index)}
+              aria-label={`Открыть изображение: ${image.alt}`}
+            >
+              <img src={image.src} alt={image.alt} />
+            </button>
+          ))}
+        </div>
+        <p className="pec1-media__note">{note}</p>
+      </div>
+
+      {lightboxIndex !== null && (
+        <div
+          className="pec1-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Полноэкранный просмотр: ${blockLabel}`}
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setLightboxIndex(null);
+          }}
+        >
+          <button
+            type="button"
+            className="pec1-lightbox__close"
+            onClick={() => setLightboxIndex(null)}
+            aria-label="Закрыть полноэкранный просмотр"
+          >
+            ×
+          </button>
+          <button
+            type="button"
+            className="pec1-lightbox__nav pec1-lightbox__nav--previous"
+            onClick={() =>
+              setLightboxIndex(
+                (lightboxIndex + images.length - 1) % images.length,
+              )
+            }
+            aria-label="Предыдущее изображение"
+          >
+            ‹
+          </button>
+          <figure>
+            <img
+              src={images[lightboxIndex].src}
+              alt={images[lightboxIndex].alt}
+            />
+            <figcaption>
+              {images[lightboxIndex].alt} · {lightboxIndex + 1}/{images.length}
+            </figcaption>
+          </figure>
+          <button
+            type="button"
+            className="pec1-lightbox__nav pec1-lightbox__nav--next"
+            onClick={() =>
+              setLightboxIndex((lightboxIndex + 1) % images.length)
+            }
+            aria-label="Следующее изображение"
+          >
+            ›
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
 function UpperLimbModule() {
   const [operationId, setOperationId] = useState<UpperOperationId>("clavicle");
   const [strategyIndex, setStrategyIndex] = useState(0);
@@ -1474,6 +1640,73 @@ function UpperLimbModule() {
           </div>
         </div>
       </div>
+
+      <section className="upper-block-atlas" aria-labelledby="interscalene-title">
+        <header className="upper-block-atlas__heading">
+          <div>
+            <span>BLOCK ATLAS / 01</span>
+            <h3 id="interscalene-title">INTERSCALENE</h3>
+            <p>Межлестничная блокада плечевого сплетения</p>
+          </div>
+          <b>SHOULDER · PROXIMAL HUMERUS</b>
+        </header>
+
+        <div className="upper-block-atlas__grid">
+          <BlockMediaGallery
+            blockLabel="Межлестничная блокада"
+            videoSrc={`${assetBasePath}/media/interscalene/INTERSCALENE_Higgsfield_transition.mp4`}
+            posterSrc={`${assetBasePath}/media/interscalene/INTERSCALENE_probe_position_clean.png`}
+            images={interscaleneImages}
+            note="Нажмите на изображение, чтобы открыть его полностью. Анимация показывает связь положения датчика, УЗ-картины и поперечной анатомии; траектория иглы и распространение раствора не моделируются."
+          />
+
+          <div className="upper-block-atlas__details">
+            <dl>
+              <div>
+                <dt>Основные показания</dt>
+                <dd>Операции на плечевом суставе, дистальной ключице и проксимальном отделе плечевой кости.</dd>
+              </div>
+              <div>
+                <dt>УЗ-ориентиры</dt>
+                <dd>Корешки/стволы плечевого сплетения между передней и средней лестничными мышцами; линейный датчик, поперечное сканирование.</dd>
+              </div>
+              <div>
+                <dt>Рабочая стратегия</dt>
+                <dd>Постеролатеральный доступ in-plane с постоянной визуализацией кончика иглы и контролем распространения в межлестничном промежутке.</dd>
+              </div>
+              <div>
+                <dt>Ограничение покрытия</dt>
+                <dd>Не считать надёжным выбором для операций на предплечье и кисти: нижний ствол C8-T1 может блокироваться неполно.</dd>
+              </div>
+            </dl>
+
+            <div className="upper-block-atlas__warning">
+              <span>КРИТИЧЕСКАЯ ПРОВЕРКА</span>
+              <p>
+                Дыхательный резерв и функция диафрагмы, ход диафрагмального нерва,
+                позвоночная и шейные артерии, внутренняя яремная вена, а также
+                риск внутриневрального, внутрисосудистого или нейроаксиального распространения.
+              </p>
+            </div>
+
+            <p className="upper-block-atlas__alternative">
+              <b>При высоком респираторном риске:</b> рассмотреть более селективную
+              стратегию для плеча; «диафрагма-сберегающий» вариант не означает нулевой риск.
+            </p>
+          </div>
+        </div>
+
+        <div className="upper-block-atlas__source">
+          <span>КЛИНИЧЕСКАЯ ОСНОВА</span>
+          <a
+            href="https://doi.org/10.1007/978-3-031-08804-9_5"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Eisenberg, Gaertner, Clavert · Brachial Plexus Blocks · 2023 ↗
+          </a>
+        </div>
+      </section>
 
       <div className="tool-grid">
         <article className="clinical-tool diaphragm-tool">
@@ -1626,51 +1859,9 @@ function UpperLimbModule() {
 
 function TrunkAnatomyMap() {
   const [activeId, setActiveId] = useState<TrunkBlockId>("pec1");
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const active =
     trunkBlockZones.find((item) => item.id === activeId) ?? trunkBlockZones[0];
   const projection = active.projection;
-  const pec1Images = [
-    {
-      src: `${assetBasePath}/media/pec1/PEC1_probe_position_clean.png`,
-      alt: "Положение ультразвукового датчика для блока PEC I",
-    },
-    {
-      src: `${assetBasePath}/media/pec1/PEC1_anatomy_clean.png`,
-      alt: "Анатомия межпекторальной плоскости PEC I",
-    },
-    {
-      src: `${assetBasePath}/media/pec1/PEC1_ultrasound_clean.png`,
-      alt: "Ультразвуковое изображение для блока PEC I",
-    },
-  ];
-
-  useEffect(() => {
-    if (lightboxIndex === null) return;
-
-    const previousOverflow = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLightboxIndex(null);
-      if (event.key === "ArrowLeft") {
-        setLightboxIndex((current) =>
-          current === null ? null : (current + pec1Images.length - 1) % pec1Images.length,
-        );
-      }
-      if (event.key === "ArrowRight") {
-        setLightboxIndex((current) =>
-          current === null ? null : (current + 1) % pec1Images.length,
-        );
-      }
-    };
-
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [lightboxIndex, pec1Images.length]);
 
   const selectProjection = (next: TrunkProjection) => {
     const defaults: Record<TrunkProjection, TrunkBlockId> = {
@@ -1841,39 +2032,13 @@ function TrunkAnatomyMap() {
           <span className="micro-label">{active.group} / ACTIVE PLANE</span>
           <h4>{active.standardName}</h4>
           {active.id === "pec1" && (
-            <div className="pec1-media">
-              <video
-                className="pec1-media__video"
-                controls
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster={`${assetBasePath}/media/pec1/PEC1_probe_position_clean.png`}
-                aria-label="PEC I interpectoral plane block animation"
-              >
-                <source
-                  src={`${assetBasePath}/media/pec1/PEC1_Higgsfield_transition.mp4`}
-                  type="video/mp4"
-                />
-              </video>
-              <div className="pec1-media__stills" aria-label="PEC I reference images">
-                {pec1Images.map((image, index) => (
-                  <button
-                    type="button"
-                    key={image.src}
-                    onClick={() => setLightboxIndex(index)}
-                    aria-label={`Открыть изображение: ${image.alt}`}
-                  >
-                    <img src={image.src} alt={image.alt} />
-                  </button>
-                ))}
-              </div>
-              <p className="pec1-media__note">
-                Нажмите на изображение, чтобы открыть его полностью. Траектория
-                иглы и распространение раствора не моделируются.
-              </p>
-            </div>
+            <BlockMediaGallery
+              blockLabel="PEC I"
+              videoSrc={`${assetBasePath}/media/pec1/PEC1_Higgsfield_transition.mp4`}
+              posterSrc={`${assetBasePath}/media/pec1/PEC1_probe_position_clean.png`}
+              images={pec1Images}
+              note="Нажмите на изображение, чтобы открыть его полностью. Траектория иглы и распространение раствора не моделируются."
+            />
           )}
           <dl>
             <div><dt>Целевая плоскость</dt><dd>{active.target}</dd></div>
@@ -1894,59 +2059,6 @@ function TrunkAnatomyMap() {
           </div>
         </aside>
       </div>
-
-      {lightboxIndex !== null && (
-        <div
-          className="pec1-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Полноэкранный просмотр изображения PEC I"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setLightboxIndex(null);
-          }}
-        >
-          <button
-            type="button"
-            className="pec1-lightbox__close"
-            onClick={() => setLightboxIndex(null)}
-            aria-label="Закрыть полноэкранный просмотр"
-          >
-            ×
-          </button>
-          <button
-            type="button"
-            className="pec1-lightbox__nav pec1-lightbox__nav--previous"
-            onClick={() =>
-              setLightboxIndex(
-                (lightboxIndex + pec1Images.length - 1) % pec1Images.length,
-              )
-            }
-            aria-label="Предыдущее изображение"
-          >
-            ‹
-          </button>
-          <figure>
-            <img
-              src={pec1Images[lightboxIndex].src}
-              alt={pec1Images[lightboxIndex].alt}
-            />
-            <figcaption>
-              {pec1Images[lightboxIndex].alt} · {lightboxIndex + 1}/
-              {pec1Images.length}
-            </figcaption>
-          </figure>
-          <button
-            type="button"
-            className="pec1-lightbox__nav pec1-lightbox__nav--next"
-            onClick={() =>
-              setLightboxIndex((lightboxIndex + 1) % pec1Images.length)
-            }
-            aria-label="Следующее изображение"
-          >
-            ›
-          </button>
-        </div>
-      )}
 
       <nav className="trunk-block-index" aria-label="Выбор фасциальной плоскости">
         {trunkBlockZones.map((item, index) => (
